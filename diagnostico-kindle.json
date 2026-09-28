@@ -1,0 +1,61 @@
+{
+  "review_date": "2026-09-28",
+  "timezone": "America/Mexico_City",
+  "scope": "Read-only USB identity, firmware version metadata and visible storage inventory; no firmware binary extraction",
+  "device": {
+    "usb_product": "Amazon Kindle",
+    "usb_vendor_id": "0x1949",
+    "usb_product_id": "0x0004",
+    "serial_prefix_only": "90C6",
+    "identified_model": "Kindle (7th Generation), Basic 2014, KT2/BASIC",
+    "identification_method": "USB serial prefix mapped through KindleModding device catalog",
+    "mount_point": "/Volumes/Kindle",
+    "filesystem": "msdos",
+    "firmware_file": "/Volumes/Kindle/system/version.txt",
+    "firmware_text": "Kindle 5.12.2.2 (379151 038)",
+    "screenshot_png_headers": [
+      {"width": 600, "height": 800},
+      {"width": 600, "height": 800}
+    ],
+    "volume_snapshot_bytes": {
+      "total": 3265175552,
+      "used": 387866624,
+      "free": 2877308928
+    },
+    "visible_inventory": {
+      "files": 2078,
+      "file_bytes": 369697280,
+      "excluded_directories": [".Spotlight-V100", ".fseventsd", ".Trashes"],
+      "read_errors": []
+    },
+    "root_marker_presence": {
+      "extensions": false,
+      "mrpackages": false,
+      "linkjail": false,
+      "bridge.conf": false,
+      "jailbreak.log": false,
+      "update.bin.tmp.partial": false,
+      "RUNME.sh": false,
+      "koreader": false,
+      "usbnet": false
+    },
+    "previous_jailbreak_status": "Unknown; absence of checked markers is not proof",
+    "battery_health": "Unknown",
+    "wifi_status": "Not tested",
+    "amazon_registration": "Not verified"
+  },
+  "compatibility": {
+    "candidate": "WinterBreak2",
+    "status": "Documented compatibility, not tested on this device",
+    "excluded_method": "KindleBreak explicitly excludes 5.12.2.2",
+    "firmware_change_needed_for_plan": false
+  },
+  "performed": {
+    "device_write_commands": false,
+    "backup": false,
+    "reset": false,
+    "jailbreak": false,
+    "newsletter_or_calendar_reads": false,
+    "automation_created": false
+  }
+}

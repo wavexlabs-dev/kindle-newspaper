@@ -1,0 +1,20 @@
+# Descargas, staging y datos privados locales
+.local/
+.env
+.env.*
+!.env.example
+credentials*.json
+*token*.json
+secrets/
+private/
+data/
+editions/
+logs/
+*.log
+*.zip
+*.tar.gz
+*.bin
+.DS_Store
+__pycache__/
+.venv/
+node_modules/
