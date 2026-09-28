@@ -6,7 +6,9 @@ El servicio en la nube investigará a partir de newsletters seleccionadas de Gma
 
 ## Estado del proyecto
 
-**En preparación.** Se ha identificado el dispositivo y documentado la arquitectura. El jailbreak todavía no se ha ejecutado; tampoco están conectadas las cuentas, desplegado el servicio cloud ni probada la actualización automática. El estado de cada intervención se registra en [docs/REGISTRO.md](docs/REGISTRO.md).
+**Archivos del jailbreak preparados.** El repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper) ya está creado y su primera subida a `main` está verificada. El archivo de arranque de WinterBreak2 se ha copiado al Kindle y su checksum coincide. Se omitió completar el relleno temporal tras confirmar que el firmware instalado coincide con la última versión que Amazon ofrece para este modelo; la decisión y el relleno parcial restante están documentados.
+
+**El payload aún no se ha ejecutado y el jailbreak no está confirmado.** Tampoco están conectadas las cuentas, desplegado el servicio cloud ni probada la actualización automática. El estado de cada intervención se registra en [docs/REGISTRO.md](docs/REGISTRO.md).
 
 | Dispositivo auditado | Valor |
 | --- | --- |
@@ -33,6 +35,7 @@ El Mac sirve para la preparación inicial y el mantenimiento. La operación diar
 - [Diagnóstico, decisiones y presupuesto](PLAN-KINDLE.md).
 - [Arquitectura y criterios de aceptación](docs/ARQUITECTURA.md).
 - [Preparación y procedimiento del jailbreak](docs/JAILBREAK.md).
+- [Verificación de ejecución, reinicio y bloqueo OTA](docs/VERIFICACION.md).
 - [Registro de intervenciones y pruebas](docs/REGISTRO.md).
 
 La primera fase es habilitar y verificar la ejecución de software propio en esta unidad. La siguiente prueba decisiva es que despierte desde reposo, descargue una portada y la muestre de forma fiable. La compatibilidad indicada por una guía no sustituye esa prueba física.
@@ -44,6 +47,12 @@ Este repositorio documenta el proyecto; no almacena correos, newsletters complet
 Las credenciales de Gmail, Calendar y OpenAI vivirán en el servicio cloud. El Kindle sólo necesitará acceso restringido a su edición. La agenda es información personal y también debe protegerse en los archivos renderizados y en los registros.
 
 Los supuestos de costes se mantienen en [PLAN-KINDLE.md](PLAN-KINDLE.md#comparación-de-costes-de-operación), para evitar cifras duplicadas. Aún no hay consumo real medido ni una suscripción nueva contratada como parte del proyecto.
+
+## Portada de prueba
+
+[examples/cover-test.png](examples/cover-test.png) es una imagen en escala de grises de 600 × 800 px con texto ficticio y el nombre provisional «La Señal». Se utiliza para comprobar legibilidad y refresco; no es una edición generada desde las cuentas ni una entrega ya validada en el Kindle.
+
+Se regenera con `python3 scripts/render_test_cover.py`. Requiere Pillow y, por defecto, las fuentes Georgia y Arial locales de macOS. El parámetro `--font-dir` permite indicar otra carpeta que contenga esos archivos; no se redistribuyen fuentes. El diseño se ha inspeccionado en el Mac y sigue pendiente la prueba física.
 
 ## Referencias
 

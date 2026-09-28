@@ -1,6 +1,7 @@
-"""Stage verified WinterBreak2 and temporary OTA filler; never executes jailbreak.
+"""Stage verified WinterBreak2, with optional OTA filler; never executes jailbreak.
 
 Default is inspection only. --apply writes only the two project-owned directories.
+--apply --fill also reserves space; a partial fill does not block updates.
 No backup, deletion, formatting, firmware update or network access is performed.
 """
 
@@ -34,7 +35,10 @@ def emit(**data):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--apply', action='store_true')
+    parser.add_argument('--fill', action='store_true', help='Opt in to temporary OTA filler.')
     args = parser.parse_args()
+    if args.fill and not args.apply:
+        parser.error('--fill requires --apply')
     if not os.path.ismount(MOUNT):
         raise SystemExit('Expected mounted Kindle volume is unavailable.')
     if (MOUNT / 'system/version.txt').read_text().strip() != FIRMWARE:
@@ -64,7 +68,9 @@ def main():
             os.fsync(out.fileno())
     if digest(destination) != EXPECTED:
         raise SystemExit('Device payload verification failed.')
-    emit(stage='payload_copied_and_verified')
+    emit(stage='payload_copied_and_verified', free_bytes=shutil.disk_usage(MOUNT).free)
+    if not args.fill:
+        return
     if not FILLER.exists():
         FILLER.mkdir()
         (FILLER / 'OWNER.txt').write_text(MARKER)
@@ -76,14 +82,25 @@ def main():
         index += 1
         if path.exists():
             continue
-        remaining = min(128 * 1024 * 1024, shutil.disk_usage(MOUNT).free - RESERVE)
+        free_before = shutil.disk_usage(MOUNT).free
+        size = min(128 * 1024 * 1024, free_before - RESERVE)
         with path.open('xb') as out:
-            while remaining:
-                n = min(len(block), remaining)
-                out.write(block[:n])
-                remaining -= n
+            # FAT allocates real clusters on extension. Check allocation rather
+            # than trusting apparent file size (other filesystems allow holes).
+            out.truncate(size)
             out.flush()
             os.fsync(out.fileno())
+            if path.stat().st_blocks * 512 < size:
+                out.seek(0)
+                remaining = size
+                while remaining:
+                    n = min(len(block), remaining)
+                    out.write(block[:n])
+                    remaining -= n
+            out.flush()
+            os.fsync(out.fileno())
+        if free_before - shutil.disk_usage(MOUNT).free < size:
+            raise SystemExit('Filler did not consume real free space; inspect before proceeding.')
         if time.monotonic() - last_report >= 15:
             emit(stage='filling', free_bytes=shutil.disk_usage(MOUNT).free)
             last_report = time.monotonic()

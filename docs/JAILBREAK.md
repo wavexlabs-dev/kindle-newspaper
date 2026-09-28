@@ -4,7 +4,7 @@ Dispositivo del proyecto: Kindle Basic 2014 / 7.ª generación / KT2, prefijo de
 
 ## Estado
 
-Paquete descargado, checksum validado y contenido inspeccionado en el Mac. **Todavía no se ha ejecutado el jailbreak en el Kindle.** La preparación de archivos no demuestra instalación.
+Paquete descargado e inspeccionado; `winterbreak2/dialoger.html` copiado al Kindle y checksum contrastado. **Todavía no se ha ejecutado el jailbreak en el Kindle.** La preparación de archivos no demuestra instalación.
 
 El usuario autorizó comenzar el jailbreak y pidió expresamente **no hacer respaldo**. Confirmó batería suficiente (aproximadamente 50 % o más) y disponibilidad para usar la pantalla física. No se ha reseteado ni formateado el dispositivo.
 
@@ -45,10 +45,12 @@ El hash anterior es una observación local de ese momento; no es una firma publi
 2. Descargar la release exacta en `.local/`, verificar SHA-256 e inspeccionar las rutas del ZIP antes de extraer.
 3. Copiar únicamente `winterbreak2/dialoger.html` a una carpeta nueva `winterbreak2` en la raíz del Kindle. Si ya existe un archivo diferente, detenerse en vez de sobrescribirlo.
 4. Comparar el checksum del archivo del Kindle con el archivo verificado.
-5. Crear relleno temporal en una carpeta propia, dejando aproximadamente 80 MiB libres (dentro del margen de la guía de 50–90 MB). No borrar contenido existente ni usar el volumen completo hasta cero bytes.
+5. Evaluar la prevención OTA de la guía. Si se utiliza relleno, crearlo en una carpeta propia, dejando aproximadamente 80 MiB libres (dentro del margen de 50–90 MB). No borrar contenido existente ni usar el volumen completo hasta cero bytes.
 6. Expulsar el volumen de forma segura.
 
-El firmware es el último que Amazon publica para este modelo. Aun así se sigue la medida de espacio temporal de la guía, que no documenta una excepción explícita para esta combinación. El relleno se eliminará sólo cuando se haya verificado el jailbreak y el bloqueo OTA.
+**Decisión para esta unidad:** se inició el relleno, pero se omitió completarlo tras volver a verificar que [Amazon ofrece 5.12.2.2 para Kindle de 7.ª generación](https://digprjsurvey.amazon.com/csad/help/node/GKMQC26VQQMM8XSW?theme=light), exactamente la versión instalada y compatible con WinterBreak2. El relleno previene descargas OTA; no es una dependencia de ejecución del exploit. Esta decisión es una inferencia técnica basada en el catálogo actual, no una excepción expresamente publicada por KindleModding ni una garantía de que nunca haya otra actualización. No se encontraron archivos de actualización pendientes en la raíz durante la preparación.
+
+El relleno parcial permanece en `.newspaper-ota-guard/` y **no constituye un bloqueo OTA efectivo**. Se retirará después de comprobar el bloqueo real instalado por el jailbreak. El script local permite inspección sin cambios (`python3 scripts/prepare_kindle.py`), preparación (`--apply`) y relleno opcional (`--apply --fill`). Comprueba ocupación real, no sólo tamaño aparente de los archivos.
 
 ## Paso físico en el Kindle
 
@@ -63,7 +65,7 @@ El acceso USB disponible permite copiar archivos; no controla la pantalla del Ki
 
 ## Verificación posterior
 
-Comprobar `documents/JAILBROKEN.txt` si lo genera el instalador, la versión anotada y cualquier salida de instalación. El marcador por sí solo no basta: verificar que, tras reiniciar, funciona una aplicación o scriptlet compatible y el gestor de paquetes. Inspeccionar el bloqueo OTA antes de retirar el relleno creado por este proyecto.
+Comprobar `documents/JAILBROKEN.txt` si lo genera el instalador, la versión anotada y cualquier salida de instalación. El marcador por sí solo no basta: verificar que, tras reiniciar, funciona una aplicación o scriptlet compatible y el gestor de paquetes. Inspeccionar el bloqueo OTA antes de retirar el relleno creado por este proyecto. El procedimiento concreto se documenta en [VERIFICACION.md](VERIFICACION.md).
 
 La documentación moderna usa el entorno HDNEXT y KPM. Seguir [What's Next](https://kindlemodding.org/jailbreaking/whats-next/) y la [guía de KOReader](https://kindlemodding.org/jailbreaking/whats-next/getting-koreader/) según los componentes realmente instalados. No añadir KUAL/MRPI o hotfixes de otras generaciones sin diagnosticar primero.
 

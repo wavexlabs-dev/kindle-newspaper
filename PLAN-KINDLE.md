@@ -19,11 +19,12 @@ Revisión: 28 de septiembre de 2026, actualizada con la preferencia de funcionam
 | Volumen accesible | 3.27 GB; aproximadamente 2.88 GB libres | Consulta del sistema de archivos; unidades decimales |
 | Contenido visible | 2,078 archivos; 369,697,280 bytes, aproximadamente 370 MB | Inventario de metadatos, excluyendo índices de macOS; no se copiará |
 | Modificaciones anteriores | No aparecen los marcadores habituales revisados en la raíz | Esto no demuestra que nunca haya tenido jailbreak |
-| Batería, Wi-Fi y registro Amazon | Pendientes de verificar en el Kindle | No inferidos a partir del cable USB |
+| Batería | Usuario confirma carga suficiente, aproximadamente 50 % o más | Confirmación del propietario antes de preparar jailbreak |
+| Wi-Fi y registro Amazon | Pendientes de verificar en el Kindle | No inferidos a partir del cable USB |
 
 La identificación procede del mapeo `C6 → KindleBasic → KT2` en el [catálogo de KindleModding](https://github.com/KindleModding/kindlemodding.github.io/blob/main/static/models_json_generator.py). Amazon sigue publicando **5.12.2.2** como última versión de este modelo; no hace falta actualizarlo para este plan. [Versiones oficiales de Amazon](https://digprjsurvey.amazon.com/csad/help/node/GKMQC26VQQMM8XSW?theme=light).
 
-Esta revisión lee la versión y los metadatos que expone USB. No es una extracción del firmware binario ni de las particiones internas. No se inspeccionó el contenido de libros, notas o capturas. No se enviaron comandos de escritura, reinicio, borrado o instalación al Kindle. Los archivos de este informe se guardan en el Mac.
+El diagnóstico inicial leyó la versión y los metadatos que expone USB. No es una extracción del firmware binario ni de las particiones internas. No se inspeccionó el contenido de libros, notas o capturas. Esa primera revisión fue de sólo lectura; las escrituras posteriores autorizadas para preparar el jailbreak se documentan en [el registro](docs/REGISTRO.md).
 
 ## Qué significa “limpiarlo”
 
@@ -32,6 +33,8 @@ El restablecimiento de fábrica elimina información de cuenta, ajustes y conten
 El usuario ha descartado el respaldo. La primera prueba puede hacerse conservando el estado actual. Después se puede retirar contenido local o preparar un reset si el objetivo incluye borrar cuenta y ajustes, teniendo definido el método de recepción: Send to Kindle requiere registro Amazon; el cliente propio de tablero no depende de ese servicio. No se formatea el volumen desde Utilidad de Discos ni se borran carpetas internas a ciegas.
 
 ## Orden de trabajo propuesto
+
+**Prioridad actualizada por el usuario:** comenzar por la modificación del Kindle y documentar todo en GitHub. Por ello los pasos 3–5 se ejecutan antes de conectar las cuentas y desplegar la generación cloud. El procedimiento concreto y su estado están en [JAILBREAK.md](docs/JAILBREAK.md).
 
 1. **Preparar la edición en la nube.** Configurar un agente programable, conectar Gmail y Google Calendar y generar una primera edición a demanda. No crear todavía una rutina diaria hasta validar la entrega y fijar la hora.
 2. **Prueba de legibilidad y recepción.** Preparar una página de prueba a 600 × 800 con agenda y tres titulares ficticios claramente marcados. Probar la entrega inalámbrica del PDF o EPUB al lector original, o de PNG al cliente de tablero una vez instalado. Ajustar letra, contraste y márgenes en la pantalla real.
