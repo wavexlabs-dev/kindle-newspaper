@@ -1,5 +1,7 @@
 # Verificación después de WinterBreak2
 
+> Documento histórico de la instalación original. Para el estado vigente y una instalación nueva, empieza por [README](../README.md) y [TUTORIAL](TUTORIAL.md). Las referencias a pendientes describen el momento de cada intervención; no repitas reparaciones automáticamente.
+
 Objetivo: comprobar el entorno instalado en el Kindle Basic 2014 / KT2 con firmware 5.12.2.2, conservar evidencia técnica por USB y distinguir presencia de archivos, ejecución y persistencia.
 
 ## Resultado actual

@@ -1,5 +1,7 @@
 # Kindle Newspaper — diagnóstico y plan
 
+> Plan histórico. Consulta [README](README.md) y [TUTORIAL](docs/TUTORIAL.md) para el estado actual. Las estimaciones de costes no equivalen a consumo medido.
+
 Revisión: 28 de septiembre de 2026, actualizada con la preferencia de funcionamiento en la nube. Objetivo: reutilizar este Kindle como tablero y como periódico matutino de IA y tecnología, a partir de las newsletters recibidas en Gmail y la agenda de Google Calendar. The Rundown AI es la referencia editorial indicada; todavía no se ha comprobado qué suscripciones están en la cuenta.
 
 **Resultado:** el dispositivo es un candidato viable. Hay una ruta documentada para modificarlo conservando su firmware actual. La instalación y el funcionamiento autónomo todavía deben probarse en esta unidad. Un agente en la nube prepara el contenido; el Kindle lo descarga por Wi-Fi. El Mac se necesita únicamente para la preparación inicial si elegimos modificar el Kindle, no como servidor diario.

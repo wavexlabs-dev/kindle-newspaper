@@ -247,3 +247,11 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - Tras completar el usuario el consentimiento, `/admin/status` respondió HTTP 200 con `all_calendars_authorized: true`, además de las conexiones de newsletters y calendario activas.
 - `/admin/agenda` respondió HTTP 200 para 2026-09-29 con tres eventos de tres calendarios distintos, en orden de inicio y horario de Ciudad de México. Esto verifica la agregación desde el servicio cloud con sus propias credenciales, no solo desde el conector de Codex.
 - La edición cloud ya publicada de esa fecha sigue siendo la original de seis páginas; la edición corregida de siete páginas fue restaurada por USB en el paso anterior. El nuevo permiso no sustituye automáticamente un manifiesto inmutable ya publicado. Las próximas generaciones usarán la agenda combinada y portada GPT Image 2.5; siguen pendientes la descarga automática al lector y el despertar programado.
+
+### Tutorial reproducible para otra instalación
+
+- Reorganizado README como portada del tutorial, con galería, compatibilidad auditada, requisitos, estado por función y enlaces a las guías. Eliminadas afirmaciones contradictorias sobre OAuth/KOReader todavía no instalados y promesas de autonomía completa.
+- Añadidos `docs/TUTORIAL.md`, `docs/EMPEZAR-CON-CODEX.md` y `docs/PORTADA.md`. Incluyen prompt de incorporación, cuentas propias, consentimiento, contrato de publicación, adaptación del dispositivo, controles, recuperación y trabajo pendiente.
+- Actualizado `cloud/README.md` con permisos de lista de calendarios, tercera llamada para imagen, caché de borradores, endpoints, variables y límites reales. Documentos antiguos marcados como históricos.
+- Añadidas cuatro capturas de páginas renderizadas: portada real de diseño y tres interiores con contenido sintético. Reproducibles con `node cloud/scripts/render-tutorial.js`, sin claves ni llamadas pagadas. No se publican capturas de agenda personal ni se presentan renders como fotografías del Kindle.
+- El repositorio sigue privado y sin licencia general de distribución. El tutorial no cambia visibilidad ni declara compatibilidad universal; la descarga diaria del lector y despertar automático siguen pendientes.

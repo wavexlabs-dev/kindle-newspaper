@@ -1,5 +1,7 @@
 # Reparación offline de KMC
 
+> Documento histórico de la instalación original. Para el estado vigente y una instalación nueva, empieza por [README](../README.md) y [TUTORIAL](TUTORIAL.md). Las referencias a pendientes describen el momento de cada intervención; no repitas reparaciones automáticamente.
+
 **Estado: jailbreak funcional verificado y primera portada observada.** Los informes 003 y 005 confirman root tras reiniciar y todos los controles del sistema, incluida inicialización FBInk a 600 × 800. `preview-5.txt` registra render con código cero y el usuario confirmó «La Señal». Los informes no alcanzan sus marcadores finales: cierre normal y retorno de pantalla no verificados.
 
 ## Diagnóstico confirmado

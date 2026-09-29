@@ -1,5 +1,7 @@
 # Jailbreak de Kindle KT2
 
+> Documento histórico de la instalación original. Para el estado vigente y una instalación nueva, empieza por [README](../README.md) y [TUTORIAL](TUTORIAL.md). Las referencias a pendientes describen el momento de cada intervención; no repitas reparaciones automáticamente.
+
 Dispositivo del proyecto: Kindle Basic 2014 / 7.ª generación / KT2, prefijo de identificación `90C6`, firmware `5.12.2.2 (379151 038)`, pantalla 600 × 800. No publicar el número de serie completo.
 
 ## Estado

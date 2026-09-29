@@ -1,79 +1,148 @@
-# Kindle Newspaper
+# Pablo’s Time
 
-Un periódico personal de IA y tecnología que llega cada mañana a un Kindle dedicado: la pantalla amanece con la nueva portada, sin abrir un documento y sin encender el Mac.
+### Convierte un Kindle compatible en tu periódico personal de la mañana
 
-El servicio en la nube investigará a partir de newsletters seleccionadas de Gmail, contrastará las noticias con fuentes originales y añadirá la agenda de Google Calendar. El Kindle recibirá la edición por Wi-Fi y permitirá recorrer sus páginas con una interfaz propia.
+Newsletters de IA y tecnología, noticias contrastadas, una portada ilustrada diferente y tus calendarios en una edición para tinta electrónica. La idea: empezar el día leyendo, sin abrir el teléfono.
 
-## Estado del proyecto
+<p align="center">
+  <img src="docs/images/01-cover.png" width="420" alt="Portada ilustrada de Pablo’s Time: Antes de dejarlo volar, 29 de septiembre de 2026">
+</p>
 
-**Jailbreak y entrega de una portada por Wi-Fi verificados en el Kindle.** La segunda prueba inalámbrica registró red conectada, respuesta HTTPS 200 con validación del certificado, checksum de imagen coincidente, render con código cero y cierre correcto. El usuario confirmó haber visto «Una señal que llega por Wi-Fi».
+**Tutorial de un prototipo funcional, no un instalador universal.** Se han probado generación cloud, lectura de Gmail y todos los calendarios, una portada recibida por Wi-Fi y apertura de la edición en KOReader. **La descarga diaria dentro del lector y el despertar automático a las 08:00 todavía están pendientes.** Conectar cualquier Kindle por USB no basta para completar esas funciones.
 
-El servicio está desplegado en Vercel y entrega imágenes mediante una credencial limitada al dispositivo. La portada probada es contenido sintético, no una edición generada desde las cuentas personales. Gmail y Calendar ya están autorizados y la lectura real está verificada. La primera edición real (2026-09-29, seis páginas) ya está publicada y sus archivos verificados desde el Mac. El usuario confirmó la portada real en el Kindle. KOReader está instalado para navegar las seis páginas; siguen pendientes su prueba táctil, la actualización inalámbrica dentro del lector, el despertar programado y la prueba diaria con el Mac apagado.
+## Empieza aquí
 
-El jailbreak se comprobó después de reiniciar: integridad de 38 archivos, KPM, parches, OTA detenido y raíz en sólo lectura. FBInk funciona a 600 × 800. «Prueba WiFi» y `;log runme` ejecutan actualmente la descarga de prueba; no programan actualizaciones diarias.
+1. [Dale este prompt a Codex](docs/EMPEZAR-CON-CODEX.md).
+2. [Sigue el tutorial de implementación](docs/TUTORIAL.md).
+3. [Configura tu portada y dirección de arte](docs/PORTADA.md).
+4. [Consulta la configuración del servidor](cloud/README.md).
+5. [Revisa qué funciona y qué falta](#qué-está-comprobado).
 
-El proyecto está documentado en el repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper). El historial y las evidencias de cada intervención están en [docs/REGISTRO.md](docs/REGISTRO.md).
+Necesitas acceso al repositorio. Actualmente es **privado**: compártelo con colaboradores autorizados o prepara una publicación separada; este README no lo hace público.
 
-| Dispositivo auditado | Valor |
+## Así se ve
+
+Estas son **capturas de las páginas renderizadas**, no fotografías del dispositivo. La portada es el diseño real generado con Image Gen; los interiores de esta galería usan **textos y eventos ficticios**. No contienen correos ni agenda personal.
+
+| Portada ilustrada | Apertura de la edición |
 | --- | --- |
-| Modelo | Kindle básico de 7.ª generación, 2014; KT2 |
-| Identificación de familia | Prefijo `90C6`; se omite el número de serie completo |
-| Firmware | `5.12.2.2` |
-| Pantalla | 600 × 800 píxeles, vertical |
+| ![Portada real de diseño](docs/images/01-cover.png) | ![Apertura con contenido ficticio](docs/images/02-editorial-demo.png) |
+| Agenda combinada · muestra | Noticia · muestra |
+| ![Agenda ficticia con varios calendarios](docs/images/03-agenda-demo.png) | ![Página de noticia ficticia](docs/images/04-article-demo.png) |
 
-**Decisión del propietario: no realizar respaldos.** Esto no equivale a un borrado inmediato. Las acciones de limpieza y modificación deben quedar descritas en el registro, junto con su resultado observado.
+Puedes reproducir estas imágenes sin claves ni consumo de API:
 
-## Experiencia prevista
+```sh
+cd cloud
+npm ci
+node scripts/render-tutorial.js
+```
 
-- Portada nueva visible a la hora matutina configurada, con fecha de edición reconocible.
-- Noticias en español, seleccionadas por relevancia, sin duplicados y con fuentes.
-- Agenda del día y un anticipo breve de mañana.
-- Páginas legibles en tinta electrónica, disponibles sin conexión después de descargarse.
-- Navegación propia del periódico y una salida de mantenimiento.
-- Última edición conservada si falla el servicio o el Wi-Fi.
+El script escribe solamente los cuatro PNG de `docs/images/`. La ilustración original y su prompt están en [assets/covers](assets/covers/).
 
-El Mac sirve para la preparación inicial y el mantenimiento. La operación diaria depende del servicio cloud, del Wi-Fi y de la batería del Kindle.
+## Cómo funciona
 
-## Documentación
+```mermaid
+flowchart TD
+  G[Newsletters seleccionadas de Gmail] --> I[Investigar y redactar con OpenAI]
+  I --> C[Portada con GPT Image 2.5 Flare]
+  A[Todos los calendarios accesibles] --> R[Maquetar páginas de 600 × 800]
+  I --> R
+  C --> R
+  R --> B[Almacenamiento privado y manifiesto con checksums]
+  B --> W[HTTPS autenticado]
+  W --> K[Kindle y KOReader]
+  K -. Pendiente .-> D[Descarga diaria y despertar automático]
+```
 
-- [Diagnóstico, decisiones y presupuesto](PLAN-KINDLE.md).
-- [Arquitectura y criterios de aceptación](docs/ARQUITECTURA.md).
-- [Preparación y procedimiento del jailbreak](docs/JAILBREAK.md).
-- [Verificación de ejecución, reinicio y bloqueo OTA](docs/VERIFICACION.md).
-- [Diagnóstico, reparación offline y resultados](docs/REPARACION.md).
-- [Registro de intervenciones y pruebas](docs/REGISTRO.md).
+La agenda se incorpora directamente: **no se envía al modelo de noticias ni al generador de imágenes**. El dispositivo necesita solo su credencial de lectura; las claves de Google y OpenAI se quedan en el servidor.
 
-El jailbreak, la descarga HTTPS de prueba y la portada física están verificados. Falta validar el despertar desde reposo y la entrega automática de ediciones reales con el Mac apagado.
+## Qué necesitas
+
+- Kindle compatible, cable de datos USB y Wi-Fi. Primero identifica **modelo y firmware**.
+- Mac para la preparación probada; Windows/Linux requieren adaptar rutas y montaje.
+- Codex o un agente de programación con acceso al repositorio y herramientas locales.
+- Node.js 22, npm y Git para el servidor; Python 3 para utilidades de preparación.
+- Cuenta OpenAI con acceso API, facturación y permisos para Responses, búsqueda e imágenes.
+- Proyecto Google Cloud con Gmail API y Calendar API, cliente OAuth web y las cuentas del propietario.
+- Vercel y **Vercel Blob privado**, o una adaptación equivalente del backend a otro proveedor.
+
+**No necesitas compartir contraseñas ni pegar claves en el chat.** Codex debe ayudarte a configurarlas localmente o como secretos del hosting.
+
+### Equipo en el que se probó
+
+| Componente | Valor observado |
+| --- | --- |
+| Dispositivo | Kindle Basic 2014, 7.ª generación, KT2 |
+| Firmware | 5.12.2.2 |
+| Pantalla | 600 × 800, vertical, escala de grises |
+| Jailbreak utilizado en esta unidad | WinterBreak2 / jb.sh 1.3.7; ver registro histórico |
+| Lector | KOReader 2026.07.1, distribución `kindlepw2` |
+| Preparación | macOS, volumen `/Volumes/Kindle` |
+| Zona horaria | America/Mexico_City |
+| Generación del servidor | Cron 12:00 UTC, aproximadamente 06:00 CDMX |
+| Objetivo de lectura | 08:00 CDMX; despertar físico aún no verificado |
+
+**Esto no es una matriz de compatibilidad.** El procedimiento de jailbreak debe verificarse con las guías oficiales vigentes para cada dispositivo. Los scripts de este repositorio contienen controles específicos de KT2/5.12.2.2 y no deben ejecutarse a ciegas en otros equipos.
+
+## Qué está comprobado
+
+Estado documentado al **29 de septiembre de 2026**:
+
+| Función | Evidencia y límite |
+| --- | --- |
+| Jailbreak y ejecución tras reinicio | Verificados en la unidad KT2 del proyecto |
+| Pantalla de tinta electrónica | FBInk dibuja PNG de 600 × 800 |
+| Entrega Wi-Fi | Portada descargada por HTTPS con certificado y checksum comprobados; confirmada visualmente |
+| Gmail | Lectura real de newsletters seleccionadas por remitente |
+| Calendar | Servicio cloud devuelve eventos del principal y compartidos; permiso de lista de calendarios confirmado |
+| Noticias reales | Primera edición publicada; URLs restringidas a fuentes recuperadas, no garantía automática de exactitud |
+| Portada ilustrada | Diseño con Image Gen y prueba API completada con GPT Image 2.5 Flare |
+| Edición multipágina | CBZ abierto en KOReader; salida normal registrada. Edición corregida de 7 páginas restaurada por USB |
+| Recuperación de borrado | Documento restaurado; al terminar se configura volver a portada |
+| Nueva edición diaria en el lector | **Pendiente de implementación y prueba** |
+| Despertar y mostrar portada a las 08:00 | **Pendiente de prueba física** |
+| Funcionamiento autónomo 24–48 horas | **Pendiente** |
+
+No confundir la portada recibida por Wi-Fi con la edición corregida cargada por USB, ni una ejecución manual del servidor con una mañana automática.
+
+## Portadas y personalización
+
+La dirección visual es una revista editorial ilustrada inspirada en *The New Yorker*, con arte original: **Pablo’s Time**, metáfora basada en las noticias, fecha visible, una línea breve de portada y alto contraste para tinta electrónica.
+
+- Modelo de imágenes del servidor: `gpt-image-2.5-flare`.
+- Calidad: `medium`; salida original solicitada: `1024x1536`, PNG.
+- Adaptación final: `600x800`, escala de grises, fondo blanco y encaje sin recortar.
+- Una portada por edición publicada; caché privada diaria para reutilizar resultados ya generados.
+- El prompt pide variar el concepto; no existe todavía un detector de repetición entre días.
+- [Especificación completa, prompt y archivos a editar](docs/PORTADA.md).
+
+Nombre, resolución, zona horaria, horario y modelos todavía están repartidos entre varios archivos: no hay un panel de personalización. El tutorial indica exactamente dónde cambiarlos.
 
 ## Privacidad y costes
 
-Este repositorio documenta el proyecto; no almacena correos, newsletters completas, eventos personales, ediciones reales, credenciales, tokens, números de serie completos ni archivos extraídos del Kindle. Los ejemplos y futuras pruebas del repositorio utilizarán contenido sintético.
+Cada instalación debe usar **sus propias** cuentas, secretos y despliegue. No reutilices la URL del proyecto, los identificadores de Google, las cuentas del propietario ni archivos privados de una instalación anterior.
 
-Las credenciales de Gmail, Calendar y OpenAI vivirán en el servicio cloud. El Kindle sólo necesitará acceso restringido a su edición. La agenda es información personal y también debe protegerse en los archivos renderizados y en los registros.
+Los ejemplos de este tutorial son ficticios. No subas `.local/`, `.env.local`, ediciones personales, tokens, capturas de consentimiento con secretos, números de serie completos ni libros. Las notas históricas incluyen contexto de la instalación original: revísalas antes de distribuir un fork públicamente.
 
-Los supuestos de costes se mantienen en [PLAN-KINDLE.md](PLAN-KINDLE.md#comparación-de-costes-de-operación), para evitar cifras duplicadas. Aún no hay consumo real medido ni una suscripción nueva contratada como parte del proyecto.
+La cuenta de ChatGPT y la API tienen facturación separada. El coste de una edición incluye investigación, redacción, búsqueda, imagen, ejecución y almacenamiento. **Todavía no hay un coste mensual medido ni una tarifa por edición verificada.** Hay pruebas con registros de uso, no una garantía de “unos centavos”. Configura los controles de gasto del proveedor y mide varias ediciones.
 
-## Portada de prueba
+## Mapa del repositorio
 
-[examples/cover-test.png](examples/cover-test.png) es una imagen en escala de grises de 600 × 800 px con texto ficticio y el nombre provisional «La Señal». El usuario confirmó haberla visto en el Kindle; no es una edición generada desde las cuentas ni una entrega inalámbrica automatizada.
-
-Se regenera con `python3 scripts/render_test_cover.py`. Requiere Pillow y, por defecto, las fuentes Georgia y Arial locales de macOS. El parámetro `--font-dir` permite indicar otra carpeta que contenga esos archivos; no se redistribuyen fuentes.
-
-El motor [kindle_preview_cover.sh](scripts/kindle_preview_cover.sh) inicializó FBInk y dibujó el PNG con código cero, confirmado visualmente. El informe posterior `preview-8.txt` confirma cierre normal. La interfaz nativa sigue activa; no se promete restauración automática de pantalla.
+| Ruta | Contenido |
+| --- | --- |
+| [docs/TUTORIAL.md](docs/TUTORIAL.md) | Recorrido de preparación, cloud, cuentas, Kindle y pruebas |
+| [docs/EMPEZAR-CON-CODEX.md](docs/EMPEZAR-CON-CODEX.md) | Prompt de inicio para una instalación nueva |
+| [docs/PORTADA.md](docs/PORTADA.md) | Dirección de arte, prompt, formatos y límites |
+| [cloud/README.md](cloud/README.md) | Variables, permisos, endpoints y publicación |
+| [cloud/src](cloud/src) | Servidor, editorial, portada, calendario y render |
+| [scripts](scripts) | Pruebas y lanzadores específicos del dispositivo auditado |
+| [docs/REGISTRO.md](docs/REGISTRO.md) | Historial cronológico; no es una receta para repetir todos los pasos |
+| [docs/JAILBREAK.md](docs/JAILBREAK.md), [docs/REPARACION.md](docs/REPARACION.md), [docs/VERIFICACION.md](docs/VERIFICACION.md) | Referencias históricas de la unidad original |
+| [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md), [PLAN-KINDLE.md](PLAN-KINDLE.md) | Diseño y decisiones históricas; el estado actual está arriba |
 
 ## Referencias
 
-- [Glanceboard](https://github.com/google-gemini/glanceboard): referencia del patrón servidor → imagen → pantalla; su firmware no corresponde a este Kindle.
-- [KindleModding](https://kindlemodding.org/): documentación de modificación del dispositivo.
-- [FBInk](https://github.com/NiLuJe/FBInk): instalado y probado para mostrar la portada en tinta electrónica.
-- [KOReader](https://github.com/koreader/koreader): candidato para lectura de la edición completa.
+[Glanceboard](https://github.com/google-gemini/glanceboard) · [KindleModding](https://kindlemodding.org/) · [KOReader](https://github.com/koreader/koreader) · [FBInk](https://github.com/NiLuJe/FBInk)
 
-El servicio cloud está implementado y desplegado; la generación con las cuentas personales aún no está autorizada ni probada. KOReader todavía no está instalado en el dispositivo.
-
-## Portadas y calendarios
-
-Pablo’s Time genera una portada editorial distinta por edición con GPT Image 2.5 Flare, a partir de las noticias y sin enviar la agenda al generador. La primera portada diseñada con Image Gen está en `assets/covers/`; el modelo interno de esa herramienta no es seleccionable. La integración API sí especifica `gpt-image-2.5-flare` y fue probada.
-
-La agenda ahora enumera todos los calendarios accesibles, incluidos compartidos y ocultos, combina sus eventos y deduplica copias por UID/ocurrencia. La autorización ampliada `calendar.calendarlist.readonly` ya está confirmada en producción y la consulta cloud devolvió los tres eventos de los calendarios principal y compartidos. Gmail no cambia.
-
-La edición corregida de siete páginas fue restaurada por USB; el manifiesto publicado anterior sigue intacto. La renovación Wi-Fi dentro del lector y despertar automático siguen pendientes. Al terminar el documento, KOReader vuelve a la portada para evitar el menú que ofrecía eliminar el archivo.
+Los componentes externos conservan sus licencias. Las fuentes Noto Serif incluyen [SIL OFL](cloud/fonts/LICENSE). Este repositorio aún no tiene una licencia general de distribución: acceso al tutorial no equivale a una licencia de código abierto.

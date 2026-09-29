@@ -1,5 +1,7 @@
 # Arquitectura del periódico
 
+> Documento histórico de la instalación original. Para el estado vigente y una instalación nueva, empieza por [README](../README.md) y [TUTORIAL](TUTORIAL.md). Las referencias a pendientes describen el momento de cada intervención; no repitas reparaciones automáticamente.
+
 Estado: servicio cloud desplegado; integración de cuentas y cliente autónomo pendientes. Fecha inicial: 28 de septiembre de 2026.
 
 ## Objetivo
