@@ -146,3 +146,7 @@ Tras verificar OTA se retiró únicamente el relleno del proyecto. El primer dib
 - [Instalador jb.sh](https://github.com/KindleModding/jb.sh); los nombres de archivos OTA y rutas anteriores se contrastaron además con el contenido empaquetado del instalador cuyo hash se registra arriba.
 
 Validación histórica del script inicial: `sh -n` y copia `documents/KT2_Diagnostico.sh` con SHA-256 `504f188b97840a43efbfc9aa5057bde499b0c66bbe246af076d87872de41607f` (3,995 bytes). El navegador permitió diagnosticar la instalación incompleta. Después de repararla, 003 verificó root, KPM, OTA y parches; 004 localizó el fallo en `-e`; 005 pasó todos los controles corregidos y dibujó la portada, confirmada por el usuario. El cierre final no consta en los informes.
+
+## Entrega HTTPS observada en el dispositivo
+
+La prueba `network-2.txt` confirmó conexión Wi-Fi, HTTP 200, validación TLS satisfactoria, checksum exacto de la portada, render FBInk correcto y cierre normal. El propietario confirmó haber visto «Una señal que llega por Wi-Fi». Esto acredita la entrega de una imagen de prueba desde el servicio privado de Vercel al Kindle sin cable durante la prueba. No acredita aún actualización automática, despertar programado ni generación a partir de Gmail y Calendar.

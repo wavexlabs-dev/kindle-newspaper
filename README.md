@@ -6,13 +6,13 @@ El servicio en la nube investigará a partir de newsletters seleccionadas de Gma
 
 ## Estado del proyecto
 
-**Jailbreak funcional verificado y primera portada vista en el Kindle.** Las pruebas 003 y 005 confirman ejecución root después de reiniciar, integridad de los 38 archivos, KPM, parches, OTA detenido y raíz en sólo lectura. El checker corregido inicializó FBInk a 600 × 800; todos los controles pasaron. El usuario confirmó que vio «La Señal» y el informe registra render con código cero.
+**Jailbreak y entrega de una portada por Wi-Fi verificados en el Kindle.** La segunda prueba inalámbrica registró red conectada, respuesta HTTPS 200 con validación del certificado, checksum de imagen coincidente, render con código cero y cierre correcto. El usuario confirmó haber visto «Una señal que llega por Wi-Fi».
 
-Los informes terminan antes de sus marcadores finales: **no está confirmado el cierre normal de la prueba ni el retorno de la pantalla tras 15 segundos**. La causa del corte no se conoce. La portada física sí está comprobada; la entrega por Wi-Fi, el despertar matutino y el servicio cloud siguen pendientes. Detalles en [VERIFICACION.md](docs/VERIFICACION.md).
+El servicio está desplegado en Vercel y entrega imágenes mediante una credencial limitada al dispositivo. La portada probada es contenido sintético, no una edición generada desde las cuentas personales. Siguen pendientes la autorización de Gmail/Calendar, la clave de OpenAI, el lector de varias páginas, el despertar programado y la prueba diaria con el Mac apagado.
 
-«Portada de prueba» quedó en Biblioteca como acceso reutilizable al motor ya probado. Su nueva entrada se verificó por sintaxis y copia, sin otra prueba física; undécima expulsión segura confirmada. `RUNME.sh` conserva el diagnóstico de una sola ejecución y no es el acceso para repetir la demo.
+El jailbreak se comprobó después de reiniciar: integridad de 38 archivos, KPM, parches, OTA detenido y raíz en sólo lectura. FBInk funciona a 600 × 800. «Prueba WiFi» y `;log runme` ejecutan actualmente la descarga de prueba; no programan actualizaciones diarias.
 
-El proyecto está documentado en el repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper). Los resultados se sustentan en comprobaciones tras reiniciar, no en el marcador inicial del instalador. Todavía no están conectadas las cuentas, desplegado el servicio cloud ni probada la actualización automática. El estado de cada intervención se registra en [docs/REGISTRO.md](docs/REGISTRO.md).
+El proyecto está documentado en el repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper). El historial y las evidencias de cada intervención están en [docs/REGISTRO.md](docs/REGISTRO.md).
 
 | Dispositivo auditado | Valor |
 | --- | --- |
@@ -43,7 +43,7 @@ El Mac sirve para la preparación inicial y el mantenimiento. La operación diar
 - [Diagnóstico, reparación offline y resultados](docs/REPARACION.md).
 - [Registro de intervenciones y pruebas](docs/REGISTRO.md).
 
-La fase de jailbreak y la primera portada física están verificadas. Falta probar que el Kindle despierte desde reposo, descargue una edición por Wi-Fi y la muestre de forma fiable con el Mac apagado.
+El jailbreak, la descarga HTTPS de prueba y la portada física están verificados. Falta validar el despertar desde reposo y la entrega automática de ediciones reales con el Mac apagado.
 
 ## Privacidad y costes
 
@@ -59,7 +59,7 @@ Los supuestos de costes se mantienen en [PLAN-KINDLE.md](PLAN-KINDLE.md#comparac
 
 Se regenera con `python3 scripts/render_test_cover.py`. Requiere Pillow y, por defecto, las fuentes Georgia y Arial locales de macOS. El parámetro `--font-dir` permite indicar otra carpeta que contenga esos archivos; no se redistribuyen fuentes.
 
-El motor [kindle_preview_cover.sh](scripts/kindle_preview_cover.sh) inicializó FBInk y dibujó el PNG con código cero, confirmado visualmente. El informe no alcanza el final del periodo de observación ni su cierre; no se promete restauración automática de pantalla.
+El motor [kindle_preview_cover.sh](scripts/kindle_preview_cover.sh) inicializó FBInk y dibujó el PNG con código cero, confirmado visualmente. El informe posterior `preview-8.txt` confirma cierre normal. La interfaz nativa sigue activa; no se promete restauración automática de pantalla.
 
 ## Referencias
 
@@ -68,4 +68,4 @@ El motor [kindle_preview_cover.sh](scripts/kindle_preview_cover.sh) inicializó 
 - [FBInk](https://github.com/NiLuJe/FBInk): instalado y probado para mostrar la portada en tinta electrónica.
 - [KOReader](https://github.com/koreader/koreader): candidato para lectura de la edición completa.
 
-La instalación de FBInk no implica que KOReader ni el servicio cloud estén implementados.
+El servicio cloud está implementado y desplegado; la generación con las cuentas personales aún no está autorizada ni probada. KOReader todavía no está instalado en el dispositivo.

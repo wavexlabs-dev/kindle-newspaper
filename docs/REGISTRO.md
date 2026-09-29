@@ -177,3 +177,10 @@ Se actualizará este registro con resultados observados, separando archivos prep
 
 - `network-1.txt`, inicio `2026-09-29T05:30:12Z`: el lanzador se ejecutó; `wifi_state=NA`, curl código 6 (`Could not resolve host: kindle-newspaper.vercel.app`), HTTP 000, salida 1. No hubo imagen descargada ni render. `ssl_verify_result=0` no demuestra validación TLS porque falló DNS antes de establecer conexión.
 - El usuario confirmó que no había revisado si la red figuraba conectada en Ajustes. Próximo paso: conectar/verificar la red desde la interfaz nativa y repetir la misma prueba, sin cambiar certificados, DNS ni servicios.
+
+### Entrega inalámbrica verificada en el Kindle
+
+- `network-2.txt`, inicio `2026-09-29T05:33:47Z`: `wifi_state=CONNECTED`, HTTP 200, `ssl_verify_result=0`, `download_rc=0`, checksum coincidente, `render_rc=0`, `network_test_complete=1` y salida 0.
+- El usuario confirmó visualmente: «Sí llegó Una señal que llega por WI-FI». La evidencia conjunta verifica descarga HTTPS autenticada desde Vercel y presentación física de la imagen de prueba sin cable durante la ejecución.
+- No demuestra todavía despertar desde suspensión, actualización a las 08:00 ni generación de noticias/agenda reales. Esos estados siguen pendientes. La interfaz nativa se mantuvo en ejecución.
+- Revisado el mecanismo de despertar de KOReader: programa `rtcWakeup` durante `readyToSuspend`, no arbitrariamente en estado activo, y discrimina reanudaciones manuales de alarmas. Fuente: https://github.com/koreader/koreader/blob/master/frontend/device/kindle/powerd.lua . No se han escrito alarmas ni modificado los ajustes de energía del Kindle.
