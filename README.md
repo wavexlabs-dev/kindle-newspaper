@@ -74,6 +74,6 @@ El servicio cloud está implementado y desplegado; la generación con las cuenta
 
 Pablo’s Time genera una portada editorial distinta por edición con GPT Image 2.5 Flare, a partir de las noticias y sin enviar la agenda al generador. La primera portada diseñada con Image Gen está en `assets/covers/`; el modelo interno de esa herramienta no es seleccionable. La integración API sí especifica `gpt-image-2.5-flare` y fue probada.
 
-La agenda ahora enumera todos los calendarios accesibles, incluidos compartidos y ocultos, combina sus eventos y deduplica copias por UID/ocurrencia. Requiere renovar la autorización de Calendar para añadir `calendar.calendarlist.readonly`; Gmail no cambia. Hasta hacerlo, no se declara activa la agregación automática.
+La agenda ahora enumera todos los calendarios accesibles, incluidos compartidos y ocultos, combina sus eventos y deduplica copias por UID/ocurrencia. La autorización ampliada `calendar.calendarlist.readonly` ya está confirmada en producción y la consulta cloud devolvió los tres eventos de los calendarios principal y compartidos. Gmail no cambia.
 
 La edición corregida de siete páginas fue restaurada por USB; el manifiesto publicado anterior sigue intacto. La renovación Wi-Fi dentro del lector y despertar automático siguen pendientes. Al terminar el documento, KOReader vuelve a la portada para evitar el menú que ofrecía eliminar el archivo.

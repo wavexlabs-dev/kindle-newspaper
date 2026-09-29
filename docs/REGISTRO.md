@@ -241,3 +241,9 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - Próximas generaciones: investigación/editorial, portada basada en noticias y agenda completa; caché privada diaria de editorial/portada para no repetir resultados ya generados. Borradores sujetos a la misma ventana de retención. Si falla la portada, no se publica una edición incompleta.
 - Google Calendar requiere permiso adicional `calendar.calendarlist.readonly`. Implementada enumeración paginada de calendarios, eventos recurrentes, orden CDMX y deduplicación por iCalUID/ocurrencia. Pendiente consentimiento y prueba cloud de la lista ampliada.
 - Fuentes técnicas: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/list y https://developers.openai.com/api/docs/guides/image-generation .
+
+### Permiso de todos los calendarios confirmado en producción
+
+- Tras completar el usuario el consentimiento, `/admin/status` respondió HTTP 200 con `all_calendars_authorized: true`, además de las conexiones de newsletters y calendario activas.
+- `/admin/agenda` respondió HTTP 200 para 2026-09-29 con tres eventos de tres calendarios distintos, en orden de inicio y horario de Ciudad de México. Esto verifica la agregación desde el servicio cloud con sus propias credenciales, no solo desde el conector de Codex.
+- La edición cloud ya publicada de esa fecha sigue siendo la original de seis páginas; la edición corregida de siete páginas fue restaurada por USB en el paso anterior. El nuevo permiso no sustituye automáticamente un manifiesto inmutable ya publicado. Las próximas generaciones usarán la agenda combinada y portada GPT Image 2.5; siguen pendientes la descarga automática al lector y el despertar programado.
