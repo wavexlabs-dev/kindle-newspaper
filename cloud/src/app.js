@@ -1,7 +1,7 @@
 import express from 'express';
 import { Store } from './store.js';
 import { equalSecret } from './security.js';
-import { startOAuth, finishOAuth } from './google.js';
+import { startOAuth, finishOAuth, calendar, allCalendarsAuthorized } from './google.js';
 import { dayKey } from './edition.js';
 import { latest, generate } from './publish.js';
 import { renderEdition } from './render.js';
@@ -22,7 +22,7 @@ export function createApp(store = new Store()) {
     if (!header.startsWith('Bearer ') || !equalSecret(header.slice(7), process.env[variable])) return res.sendStatus(401);
     next();
   };
-  app.get('/', (_req, res) => res.type('text').send('La Señal · Periódico personal de IA y tecnología. Acceso privado.'));
+  app.get('/', (_req, res) => res.type('text').send('Pablo’s Time · Periódico personal de IA y tecnología. Acceso privado.'));
   app.get('/health', (_req, res) => res.json({ service: 'la-senal', status: 'running' }));
   app.post('/admin/oauth/:role', auth('ADMIN_TOKEN'), async (req, res) => res.json({ url: await startOAuth(store, req.params.role) }));
   app.get('/oauth/callback', async (req, res) => {
@@ -32,8 +32,10 @@ export function createApp(store = new Store()) {
   });
   app.get('/admin/status', auth('ADMIN_TOKEN'), async (_req, res) => res.json({
     newsletters: !!await store.read('oauth/newsletters'), calendar: !!await store.read('oauth/calendar'),
+    all_calendars_authorized: await allCalendarsAuthorized(store),
     latest: (await latest(store))?.day || null, today: await store.json(`runs/${dayKey()}.json`),
   }));
+  app.get('/admin/agenda', auth('ADMIN_TOKEN'), async (_req, res) => res.json({day:dayKey(), agenda:await calendar(store,dayKey())}));
   app.post('/admin/generate', auth('ADMIN_TOKEN'), async (req, res) => res.json(await generate(store, dayKey(), { retryFailed: req.body?.retryFailed === true })));
   app.post('/admin/test-delivery', auth('ADMIN_TOKEN'), async (_req, res) => {
     const [png] = await renderEdition(deliverySample(dayKey()));

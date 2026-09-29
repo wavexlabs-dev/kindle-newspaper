@@ -8,6 +8,10 @@ export async function prune(store, now = DateTime.now(), days = Number(process.e
   const cutoff = local.startOf('day').minus({ days: days - 1 }).toISODate();
   const protectedDay = (await latest(store, now))?.day;
   const candidates = [];
+  for (const item of await store.list('drafts/')) {
+    const match = /^drafts\/(\d{4}-\d{2}-\d{2})\/(editorial\.json|cover\.png|cover-usage\.json)$/.exec(item.pathname);
+    if (match && validDay(match[1]) && match[1] < cutoff) candidates.push(item.pathname);
+  }
   for (const item of await store.list('editions/')) {
     const match = /^editions\/(\d{4}-\d{2}-\d{2})\/(manifest\.json|edition\.json|page-(?:[1-9]|1\d|20)\.png)$/.exec(item.pathname);
     if (match && validDay(match[1]) && match[1] < cutoff && match[1] !== protectedDay) candidates.push(item.pathname);

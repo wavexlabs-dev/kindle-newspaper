@@ -4,6 +4,7 @@ import { ZONE, nextDelivery, dayKey, validDay, validManifest } from './edition.j
 import { renderEdition } from './render.js';
 import { newsletters, calendar } from './google.js';
 import { editEdition } from './editor.js';
+import { generateCover } from './cover.js';
 
 export async function latest(store, now = DateTime.now()) {
   // Discover immutable commit markers, including the last edition after a long
@@ -19,9 +20,9 @@ export async function latest(store, now = DateTime.now()) {
   }
   return null;
 }
-export async function publish(store, edition) {
+export async function publish(store, edition, options = {}) {
   if (!validDay(edition.day)) throw new Error('Invalid edition date');
-  const buffers = await renderEdition(edition);
+  const buffers = await renderEdition(edition, options);
   const pages = [];
   for (const [i, png] of buffers.entries()) {
     const name = `page-${i + 1}.png`;
@@ -60,9 +61,21 @@ export async function generate(store, day, { retryFailed = false } = {}) {
     if (!mail.length) throw new Error('No matching newsletters');
     audit.stage = 'editorial';
     await store.writeJSON(`runs/${day}.json`, { ...audit, status: 'started' }, { overwrite: true });
-    const { editorial, usage } = await editEdition(mail, day);
+    const draftPath = `drafts/${day}/editorial.json`;
+    const draft = await store.json(draftPath) || await editEdition(mail, day);
+    if (!await store.json(draftPath)) await store.writeJSON(draftPath, draft);
+    const { editorial, usage } = draft;
+    audit.stage = 'cover';
+    await store.writeJSON(`runs/${day}.json`, { ...audit, status:'started' }, {overwrite:true});
+    let cover = await store.read(`drafts/${day}/cover.png`);
+    if (!cover) {
+      const generated = await generateCover(editorial, day);
+      cover = generated.png;
+      await store.write(`drafts/${day}/cover.png`, cover, {type:'image/png'});
+      await store.writeJSON(`drafts/${day}/cover-usage.json`, {model:generated.model,usage:generated.usage});
+    }
     audit.stage = 'render_publish';
-    const manifest = await publish(store, { day, editorial, agenda });
+    const manifest = await publish(store, { day, editorial, agenda }, {cover});
     await store.writeJSON(`runs/${day}.json`, { ...audit, status: 'published', pages: manifest.pages.length, usage }, { overwrite: true });
     return { status: 'published', day, pages: manifest.pages.length };
   } catch (error) {

@@ -230,3 +230,14 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - Configuración inicial en español, ajuste de página completa y pie adicional desactivado. La edición ya lleva numeración impresa. Tocar zona media derecha avanza y zona media izquierda retrocede; tocar arriba abre el menú del lector.
 - Esta primera prueba del lector usa la edición precargada por USB. La descarga inalámbrica completa, actualización diaria dentro del lector y despertar automático siguen pendientes.
 - Instalación USB completada: 1,029 archivos del paquete oficial copiados y releídos con comparación SHA-256 individual; seis páginas CBZ instaladas y lanzador verificado. No había instalación previa de KOReader. El resultado funcional táctil queda pendiente de la prueba del usuario.
+
+### Recuperación de documento y Pablo’s Time
+
+- Tras el reporte de borrado accidental, `current.cbz` estaba ausente. KOReader registró apertura correcta y cierre con código 0; el wrapper restauró interfaz y USB. El fallo no fue una corrupción del lector.
+- Restaurada una nueva edición CBZ de siete páginas y verificado su SHA-256 desde el Kindle: portada Image Gen, índice/editorial, agenda de tres eventos y cuatro noticias. La agenda se obtuvo mediante el conector de Google, consultando los cuatro calendarios, incluido el de festivos sin eventos ese día. No se incluyen datos personales en Git.
+- Configurado `end_document_action = "goto_beginning"`: al terminar vuelve al inicio, evitando el menú de fin que incluía «Delete file». Se conserva acceso al menú normal para salir. No es un bloqueo total de la gestión de archivos.
+- Primera portada de Pablo’s Time creada con la herramienta incorporada Image Gen y guardada con su prompt en `assets/covers/`. Ilustración editorial monocroma inspirada en The New Yorker, concepto «Antes de dejarlo volar». No se atribuye a la herramienta un modelo interno no confirmado.
+- Probada además la integración cloud real con Responses y herramienta `image_generation`, modelo explícito `gpt-image-2.5-flare`, calidad medium, una imagen. Resultado completado y normalizado a 600×800, 382136 bytes. Uso guardado fuera de Git. La agenda no se envía al generador.
+- Próximas generaciones: investigación/editorial, portada basada en noticias y agenda completa; caché privada diaria de editorial/portada para no repetir resultados ya generados. Borradores sujetos a la misma ventana de retención. Si falla la portada, no se publica una edición incompleta.
+- Google Calendar requiere permiso adicional `calendar.calendarlist.readonly`. Implementada enumeración paginada de calendarios, eventos recurrentes, orden CDMX y deduplicación por iCalUID/ocurrencia. Pendiente consentimiento y prueba cloud de la lista ampliada.
+- Fuentes técnicas: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/list y https://developers.openai.com/api/docs/guides/image-generation .

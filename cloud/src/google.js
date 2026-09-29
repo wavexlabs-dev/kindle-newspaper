@@ -4,10 +4,11 @@ import { convert } from 'html-to-text';
 import { DateTime } from 'luxon';
 import { seal, unseal } from './security.js';
 import { ZONE } from './edition.js';
+import { readCalendars } from './calendar.js';
 
 const scopes = {
-  newsletters: 'https://www.googleapis.com/auth/gmail.readonly',
-  calendar: 'https://www.googleapis.com/auth/calendar.events.readonly',
+  newsletters: ['https://www.googleapis.com/auth/gmail.readonly'],
+  calendar: ['https://www.googleapis.com/auth/calendar.events.readonly', 'https://www.googleapis.com/auth/calendar.calendarlist.readonly'],
 };
 const expectedAccount = role => process.env[role === 'calendar' ? 'CALENDAR_ACCOUNT' : 'NEWSLETTER_ACCOUNT'];
 function client() {
@@ -20,7 +21,7 @@ export async function startOAuth(store, role) {
   const verifier = randomBytes(48).toString('base64url');
   await store.write(`oauth/state-${state}`, seal({ role, verifier, expires: Date.now() + 600000 }));
   return auth.generateAuthUrl({
-    scope: ['openid', 'email', scopes[role]], access_type: 'offline', prompt: 'consent',
+    scope: ['openid', 'email', ...scopes[role]], access_type: 'offline', prompt: 'consent',
     state, login_hint: expectedAccount(role),
     code_challenge: createHash('sha256').update(verifier).digest('base64url'), code_challenge_method: 'S256',
   });
@@ -37,8 +38,8 @@ export async function finishOAuth(store, state, code) {
   const identity = ticket.getPayload();
   if (!identity.email_verified || identity.email.toLowerCase() !== expectedAccount(saved.role).toLowerCase()) throw new Error('Unexpected Google account');
   if (!tokens.refresh_token) throw new Error('Offline access was not granted');
-  if (!tokens.scope?.split(' ').includes(scopes[saved.role])) throw new Error('Required scope was not granted');
-  await store.write(`oauth/${saved.role}`, seal({ refresh_token: tokens.refresh_token }), { overwrite: true });
+  if (!scopes[saved.role].every(scope => tokens.scope?.split(' ').includes(scope))) throw new Error('Required scope was not granted');
+  await store.write(`oauth/${saved.role}`, seal({ refresh_token: tokens.refresh_token, scope: tokens.scope }), { overwrite: true });
   await store.remove(path);
   return saved.role;
 }
@@ -48,6 +49,12 @@ async function apiClient(store, role) {
   const auth = client();
   auth.setCredentials(unseal(record.toString()));
   return auth;
+}
+export async function allCalendarsAuthorized(store) {
+  const raw = await store.read('oauth/calendar');
+  if (!raw) return false;
+  const granted = unseal(raw.toString()).scope?.split(' ') || [];
+  return scopes.calendar.every(scope => granted.includes(scope));
 }
 function bodyText(part) {
   if (!part) return '';
@@ -72,22 +79,5 @@ export async function newsletters(store) {
   return result;
 }
 export async function calendar(store, day) {
-  const auth = await apiClient(store, 'calendar');
-  const start = DateTime.fromISO(day, { zone: ZONE }).startOf('day');
-  let pageToken, all = [];
-  for (let page = 0; page < 5; page++) {
-    const { data } = await auth.request({
-      url: 'https://www.googleapis.com/calendar/v3/calendars/primary/events', timeout: 15000,
-      params: { timeMin: start.toISO(), timeMax: start.plus({ days: 1 }).toISO(), singleEvents: true, orderBy: 'startTime', timeZone: ZONE, maxResults: 100, ...(pageToken ? { pageToken } : {}) },
-    });
-    all.push(...(data.items || []));
-    pageToken = data.nextPageToken;
-    if (!pageToken) break;
-  }
-  if (pageToken) throw new Error('Calendar is larger than configured limit');
-  return all.filter(e => e.status !== 'cancelled').map(e => ({
-    title: (e.summary || 'Evento sin título').slice(0, 250),
-    time: e.start.date ? 'Todo el día' : DateTime.fromISO(e.start.dateTime).setZone(ZONE).toFormat('HH:mm'),
-    location: (e.location || '').slice(0, 180),
-  }));
+  return readCalendars(await apiClient(store, 'calendar'), day);
 }

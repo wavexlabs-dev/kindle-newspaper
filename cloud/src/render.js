@@ -30,14 +30,14 @@ export function lines(text, size, width = 536, heavy = false) {
   return result;
 }
 
-export async function renderEdition(edition) {
+export async function renderEdition(edition, { cover } = {}) {
   const pages = [];
   const date = DateTime.fromISO(edition.day).setLocale('es-MX').toFormat("cccc d 'de' LLLL");
   let parts, y;
   function newPage(section) {
     if (parts) pages.push(parts);
     parts = [`<rect width="600" height="800" fill="white"/>`,
-      `<text x="32" y="44" font-size="19" font-weight="bold">LA SEÑAL</text>`,
+      `<text x="32" y="44" font-size="19" font-weight="bold">PABLO’S TIME</text>`,
       `<text x="568" y="44" text-anchor="end" font-size="13">${esc(section)}</text>`,
       '<path d="M32 57H568" stroke="black"/>'];
     y = 92;
@@ -57,11 +57,12 @@ export async function renderEdition(edition) {
   paragraph('EN ESTA EDICIÓN', 15, true);
   edition.editorial.articles.forEach((a, i) => paragraph(`${i + 1}. ${a.title}`, 18, true, 6));
   newPage('TU DÍA');
-  paragraph('Hoy, en tu calendario', 30, true, 16);
+  paragraph('Hoy, en tus calendarios', 30, true, 16);
   if (!edition.agenda.length) paragraph('No hay eventos en tu calendario para hoy.');
   for (const event of edition.agenda) {
     paragraph(event.time, 16, true, 0);
     paragraph(event.title, 22, true, 8);
+    if (event.calendars?.length) paragraph(event.calendars.join(' · '), 13, false, 8);
     if (event.location) paragraph(event.location, 17, false, 12);
   }
   edition.editorial.articles.forEach((article, i) => {
@@ -74,10 +75,10 @@ export async function renderEdition(edition) {
     for (const source of article.sources) paragraph(new URL(source).hostname.replace(/^www\./, ''), 16, false, 2);
   });
   pages.push(parts);
-  if (pages.length > 20) throw new Error('Edition exceeds page limit');
-  const output = [];
+  if (pages.length + (cover ? 1 : 0) > 20) throw new Error('Edition exceeds page limit');
+  const output = cover ? [cover] : [];
   for (const [i, page] of pages.entries()) {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><g font-family="Noto Serif" fill="black">${page.join('')}<path d="M32 764H568" stroke="black"/><text x="32" y="785" font-size="12">${esc(date)}</text><text x="568" y="785" text-anchor="end" font-size="12">${i + 1} / ${pages.length}</text></g></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><g font-family="Noto Serif" fill="black">${page.join('')}<path d="M32 764H568" stroke="black"/><text x="32" y="785" font-size="12">${esc(date)}</text><text x="568" y="785" text-anchor="end" font-size="12">${i + 1 + (cover ? 1 : 0)} / ${pages.length + (cover ? 1 : 0)}</text></g></svg>`;
     const raster = new Resvg(svg, { font: { fontFiles: [regular, bold], loadSystemFonts: false } }).render().asPng();
     output.push(await sharp(raster).flatten({ background: 'white' }).greyscale().png().toBuffer());
   }

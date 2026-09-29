@@ -1,5 +1,5 @@
 #!/bin/sh
-# Name: Leer La Senal
+# Name: Pablos Time
 # Author: Kindle Newspaper
 # DontUseFBInk
 # Open the verified, offline edition with KOReader's native touch handling.
