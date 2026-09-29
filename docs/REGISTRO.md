@@ -198,3 +198,9 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - Gmail API (`gmail.googleapis.com`) y Google Calendar API (`calendar-json.googleapis.com`) habilitadas; ambas muestran estado `Enabled`. No se vinculó facturación ni se contrataron servicios de pago durante estas acciones.
 - Formulario del cliente web «La Señal — Vercel» preparado con una sola URI de retorno: `https://kindle-newspaper.vercel.app/oauth/callback`. Sin orígenes JavaScript. Creación de credencial y guardado en Vercel pendientes de confirmación explícita solicitada.
 - Las APIs habilitadas y la configuración OAuth no equivalen a acceso al correo: siguen pendientes credencial, usuarios de prueba y consentimientos individuales de Gmail/Calendar.
+
+### Credencial Google configurada en Vercel
+
+- El propietario completó la creación del cliente «La Señal — Vercel». Verificado en la consola el cliente web habilitado y la URI exacta `/oauth/callback` del servicio, sin orígenes JavaScript adicionales.
+- Identificador y secreto guardados como variables sensibles `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` de producción en Vercel. Ningún valor secreto se incluye en Git.
+- El acceso efectivo de las cuentas requiere todavía finalizar los consentimientos y comprobar los tokens desde el servicio. La aplicación está en modo Testing; no se declara operación diaria permanente.
