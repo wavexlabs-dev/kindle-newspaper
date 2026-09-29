@@ -35,7 +35,7 @@ export async function publish(store, edition) {
   await store.writeJSON(`editions/${edition.day}/manifest.json`, manifest);
   return manifest;
 }
-export async function generate(store, day) {
+export async function generate(store, day, { retryFailed = false } = {}) {
   if (!validDay(day)) throw new Error('Invalid generation date');
   const existing = await store.json(`editions/${day}/manifest.json`);
   if (existing) return { status: 'already-published', day };
@@ -45,15 +45,33 @@ export async function generate(store, day) {
   if (!await store.read('oauth/newsletters') || !await store.read('oauth/calendar')) throw new Error('Connect both Google accounts first');
   // Fail closed on concurrent/repeated invocation: a failed day requires review,
   // not unlimited paid retries. Never silently fall back to demo content.
-  await store.writeJSON(`runs/${day}.json`, { status: 'started', at: new Date().toISOString() });
+  const prior = await store.json(`runs/${day}.json`);
+  if (prior && (!retryFailed || prior.status !== 'failed' || (prior.attempt || 1) >= 2)) throw new Error('Generation already attempted; review required');
+  const attempt = prior ? (prior.attempt || 1) + 1 : 1;
+  if (prior) await store.writeJSON(`runs/${day}-retry-${attempt}.json`, { at: new Date().toISOString() });
+  const audit = { attempt, at: new Date().toISOString(), stage: 'sources' };
+  await store.writeJSON(`runs/${day}.json`, { ...audit, status: 'started' }, { overwrite: !!prior });
   try {
     const [mail, agenda] = await Promise.all([newsletters(store), calendar(store, day)]);
+    audit.newsletter_count = mail.length;
+    audit.agenda_count = agenda.length;
+    if (!mail.length) throw new Error('No matching newsletters');
+    audit.stage = 'editorial';
+    await store.writeJSON(`runs/${day}.json`, { ...audit, status: 'started' }, { overwrite: true });
     const { editorial, usage } = await editEdition(mail, day);
+    audit.stage = 'render_publish';
     const manifest = await publish(store, { day, editorial, agenda });
-    await store.writeJSON(`runs/${day}.json`, { status: 'published', pages: manifest.pages.length, usage }, { overwrite: true });
+    await store.writeJSON(`runs/${day}.json`, { ...audit, status: 'published', pages: manifest.pages.length, usage }, { overwrite: true });
     return { status: 'published', day, pages: manifest.pages.length };
   } catch (error) {
-    await store.writeJSON(`runs/${day}.json`, { status: 'failed', at: new Date().toISOString() }, { overwrite: true });
+    await store.writeJSON(`runs/${day}.json`, { ...audit, status: 'failed', error: safeGenerationError(error) }, { overwrite: true });
     throw error;
   }
+}
+
+export function safeGenerationError(error) {
+  const known = ['No matching newsletters', 'Research did not complete', 'Insufficient verified source URLs', 'Editorial did not complete', 'Editorial source was not retrieved', 'Edition exceeds page limit', 'Invalid rendered edition'];
+  if (known.includes(error.message)) return error.message;
+  if (error.name === 'ZodError') return 'Editorial schema validation failed';
+  return { type: String(error.name || 'Error').slice(0, 60), status: Number.isInteger(error.status) ? error.status : null };
 }

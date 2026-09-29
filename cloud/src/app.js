@@ -34,7 +34,7 @@ export function createApp(store = new Store()) {
     newsletters: !!await store.read('oauth/newsletters'), calendar: !!await store.read('oauth/calendar'),
     latest: (await latest(store))?.day || null, today: await store.json(`runs/${dayKey()}.json`),
   }));
-  app.post('/admin/generate', auth('ADMIN_TOKEN'), async (_req, res) => res.json(await generate(store, dayKey())));
+  app.post('/admin/generate', auth('ADMIN_TOKEN'), async (req, res) => res.json(await generate(store, dayKey(), { retryFailed: req.body?.retryFailed === true })));
   app.post('/admin/test-delivery', auth('ADMIN_TOKEN'), async (_req, res) => {
     const [png] = await renderEdition(deliverySample(dayKey()));
     // Explicit test object, never published as the daily edition.
