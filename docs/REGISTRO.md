@@ -23,6 +23,9 @@ Fecha: 28 de septiembre de 2026. Zona del usuario: America/Mexico_City.
 9. Tras la reconexión USB se comprobó firmware sin cambios y `documents/JAILBROKEN.txt` (108 bytes), identificando jb.sh v1.3.7 y Winterbreak2. Existe `libkh/bin` pero está vacío: falta la copia esperada de FBInk. El espacio libre es 1,918,722,048 bytes en esa comprobación. No se había generado ningún informe de diagnóstico.
 10. Actualizado el diagnóstico para probar FBInk interno si está disponible. Copiado `documents/KT2_Diagnostico.sh`, 3,995 bytes, SHA-256 `504f188b97840a43efbfc9aa5057bde499b0c66bbe246af076d87872de41607f`; igualdad entre original y copia comprobada. Sólo se añadió ese archivo, sin reinstalar ni borrar componentes.
 11. Segunda expulsión segura confirmada. Se indicó Modo avión, reinicio completo, abrir `Diagnostico Kindle` desde Biblioteca y reconectar USB. Resultado pendiente.
+12. El usuario transcribió el texto del comprobante `JAILBROKEN.txt`. Se aclaró que es distinto de `Diagnostico Kindle`. Confirmó que este último no aparece en Biblioteca y reconectó por USB. El archivo de diagnóstico mantiene el checksum correcto y no hay informes nuevos; FBInk USB continúa ausente.
+13. Preparado el acceso alternativo desde búsqueda, revisando `dispatch.sh` del payload y el registro de comandos. Copiado `RUNME.sh` (889 bytes, SHA-256 `3dd8d0471cdf891c6f0cdf4a0a7f6dc9cceb8abd5da7d72b1d160915300f5991`) sin sobrescribir un archivo anterior. Ejecuta únicamente el diagnóstico existente y registra el resultado técnico. Sintaxis local y copia verificadas.
+14. Tercera expulsión segura confirmada. Se indicó escribir `;log runme` en búsqueda, esperar 15 segundos y reconectar USB. Resultado pendiente.
 
 ## Relleno temporal y decisión OTA
 
@@ -41,7 +44,7 @@ Comprobación al terminar: 8 archivos de relleno, 956,301,312 bytes de contenido
 - Relleno temporal: detenido y parcial; decisión de no completarlo documentada.
 - Ejecución del payload: observada en las fotos y corroborada por el marcador USB.
 - Jailbreak funcional: no confirmado; falta la copia USB de FBInk y aún no hay prueba de ejecución tras reiniciar.
-- Verificación post-jailbreak: diagnóstico copiado, pendiente del paso físico y su informe.
+- Verificación post-jailbreak: el script no aparece en Biblioteca; acceso alternativo por búsqueda copiado y pendiente de ejecución e informe.
 - Repositorio GitHub: privado, creado y primera subida a `main` verificada.
 - Backups: ninguno, por instrucción del usuario.
 - Reset y extracción de contenido personal: no realizados.

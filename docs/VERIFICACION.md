@@ -37,7 +37,21 @@ La prueba ejecuta:
 6. En el Kindle, abrir **Biblioteca**, quitar filtros que oculten documentos y tocar **Diagnostico Kindle**, autor **Kindle Newspaper**. No se escribe ningún comando en la búsqueda para ejecutarlo.
 7. Esperar a volver a Biblioteca. Conectar por USB y leer el nuevo `/Volumes/Kindle/kt2-diagnostic-N.txt`.
 
-Para reducir ciclos USB, puede precolocarse `KT2_Diagnostico.sh` antes de ejecutar WinterBreak2. Un `.sh` con ese nombre normal no tiene una ruta de ejecución automática en el instalador revisado. Sin embargo, no se verificó que todos los escáneres antiguos reindexen retroactivamente archivos con una extensión que antes no reconocían. Si después del jailbreak y del reinicio no aparece, reconectar USB y copiarlo con un nombre nuevo, por ejemplo `KT2_Diagnostico_2.sh`, conservando los mismos metadatos. Expulsar y revisar Biblioteca de nuevo. No usar los nombres especiales `emergency.sh` o `runme.sh` como atajo.
+Para reducir ciclos USB, puede precolocarse `KT2_Diagnostico.sh` antes de ejecutar WinterBreak2. Un `.sh` con ese nombre normal no tiene una ruta de ejecución automática en el instalador revisado. Sin embargo, no se verificó que todos los escáneres antiguos reindexen retroactivamente archivos con una extensión que antes no reconocían. Si no aparece, comprobar filtros e integridad del archivo antes de elegir otra vía. Los nombres especiales `emergency.sh` y `RUNME.sh` requieren revisar expresamente su contenido y mecanismo de activación; no se usan como sustitutos arbitrarios del nombre del script.
+
+## Alternativa manual desde búsqueda
+
+El usuario confirmó que no aparece `Diagnostico Kindle` en Biblioteca. Se volvió a comprobar por USB que `documents/KT2_Diagnostico.sh` mantiene el hash esperado y que no existe ningún informe. El texto que sí pudo abrir era `documents/JAILBROKEN.txt`, creado por el instalador; no ejecuta la prueba.
+
+Se preparó [kindle_run_diagnostic.sh](../scripts/kindle_run_diagnostic.sh), que sólo invoca el diagnóstico conocido y registra el inicio y código de salida en un archivo nuevo `kt2-diagnostic-launch-N.txt`. No instala componentes, reinicia ni usa la red.
+
+El `dispatch.sh` incluido en el instalador revisado dirige el argumento `runme` a `/mnt/us/RUNME.sh`. `patch_system.sh` instala ese dispatcher como `/usr/bin/logThis.sh`, activa la bandera necesaria y registra `;log` en los comandos de búsqueda. Esta ruta depende de que esos parches hayan aplicado; no se presupone que funcionen. No necesita crear `jb.sh.debug` ni activar telnet.
+
+Comprobada la ausencia de un `RUNME.sh` previo, se copió el wrapper: 889 bytes, SHA-256 `3dd8d0471cdf891c6f0cdf4a0a7f6dc9cceb8abd5da7d72b1d160915300f5991`. Se comparó con el original y se expulsó el volumen de forma segura.
+
+Paso manual: mantener Modo avión, escribir exactamente `;log runme` en la búsqueda y pulsar Enter; esperar unos 15 segundos y reconectar USB. Puede no haber aviso visible. Leer los informes para verificar ejecución. Una búsqueda normal con «Sin resultados» o la ausencia de informes no acreditan éxito. No repetir comandos automáticamente ni reinstalar como respuesta a esa ausencia.
+
+Esta prueba comprueba ejecución a través del dispatcher. Aunque funcione, no confirma que SH_Integration esté registrado ni que el archivo aparezca en Biblioteca. La copia de `RUNME.sh` queda identificada como temporal para retirarla cuando se haya recogido la evidencia.
 
 ## Cómo interpretar el informe
 

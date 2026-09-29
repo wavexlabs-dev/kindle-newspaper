@@ -6,7 +6,7 @@ El servicio en la nube investigará a partir de newsletters seleccionadas de Gma
 
 ## Estado del proyecto
 
-**Instalador ejecutado; verificación funcional pendiente.** Las fotos del dispositivo muestran `Done` y `Restarting GUI`; por USB se ha comprobado el marcador `JAILBROKEN.txt` de jb.sh v1.3.7. La carpeta `libkh/bin` existe pero falta la copia USB esperada de FBInk. Se copió un diagnóstico para comprobar los componentes internos después de un reinicio completo.
+**Instalador ejecutado; verificación funcional pendiente.** Las fotos del dispositivo muestran `Done` y `Restarting GUI`; por USB se ha comprobado el marcador `JAILBROKEN.txt` de jb.sh v1.3.7. La carpeta `libkh/bin` existe pero falta la copia USB esperada de FBInk. El diagnóstico copiado no aparece en Biblioteca; se preparó un acceso alternativo desde búsqueda para comprobar los componentes internos.
 
 El proyecto está documentado en el repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper). **El marcador del instalador todavía no demuestra un jailbreak funcional.** Tampoco están conectadas las cuentas, desplegado el servicio cloud ni probada la actualización automática. El estado de cada intervención se registra en [docs/REGISTRO.md](docs/REGISTRO.md).
 
