@@ -3,6 +3,7 @@ local UIManager = require('ui/uimanager')
 local Device = require('device')
 local NetworkMgr = require('ui/network/manager')
 local JSON = require('json')
+local DocSettings = require('docsettings')
 local InfoMessage = require('ui/widget/infomessage')
 local PluginShare = require('pluginshare')
 local BASE = '/mnt/us/newspaper-reader'
@@ -153,6 +154,17 @@ function App:download(trigger)
     self.failures=0
     self:scheduleNext(m)
     if self.ui.document.file~=target then
+        -- Every revision is a new document: do not inherit KOReader's crop/width defaults.
+        local settings=DocSettings:open(target)
+        if settings:readSetting('pablostime_layout_version')~=1 then
+            settings:saveSetting('zoom_mode','page')
+            settings:saveSetting('kopt_page_scroll',0)
+            settings:saveSetting('kopt_trim_page',0)
+            settings:saveSetting('kopt_text_wrap',0)
+            settings:saveSetting('page',1)
+            settings:saveSetting('pablostime_layout_version',1)
+            settings:flush()
+        end
         local receipt=function() self:receipt(m,'opened',trigger);log('edition_opened trigger='..trigger) end
         UIManager:nextTick(function() self.ui:switchDocument(target,false,receipt) end)
     else

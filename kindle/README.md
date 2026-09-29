@@ -4,6 +4,7 @@
 
 - Solo se activa al abrir un documento bajo `/mnt/us/newspaper-reader`, con el marcador propietario esperado.
 - `wifi-config.json`: `{ "origin": "https://TU-SERVIDOR" }` sin ruta o barra final. `device.curl` contiene el header Authorization del dispositivo; `cacert.pem` valida TLS. Son archivos privados, no se incluyen en Git.
+- Cada edición nueva se abre ajustada a página completa, sin recorte, desplazamiento continuo ni recomposición del texto. Se guarda por documento, sin cambiar otros libros.
 - Descarga manifiesto y CBZ completo, comprueba límites, origen fijo, bytes y SHA-256; conserva edición anterior. Actualiza un puntero local y cambia el documento de KOReader.
 - Programa `next_delivery` tanto para el lector despierto como mediante `Device.wakeup_mgr`. El wrapper nativo de KOReader es quien aplica RTC durante ReadyToSuspend. Hay que dejar KOReader abierto; no persiste una alarma independiente si se cierra o reinicia el lector.
 - Requiere reloj del dispositivo a menos de 5 minutos del servidor. La configuración actual usa CDMX; el fallback de reintentos también está fijado a las 08:00 UTC-6.
