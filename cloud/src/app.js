@@ -7,6 +7,7 @@ import { latest, generate } from './publish.js';
 import { renderEdition } from './render.js';
 import { deliverySample } from './sample.js';
 import { createHash } from 'node:crypto';
+import { prune } from './retention.js';
 
 export function createApp(store = new Store()) {
   const app = express();
@@ -40,7 +41,12 @@ export function createApp(store = new Store()) {
     await store.write('checks/cover.png', png, { overwrite: true, type: 'image/png' });
     res.json({ test: true, path: '/device/test-cover.png', bytes: png.length, sha256: createHash('sha256').update(png).digest('hex') });
   });
-  app.get('/cron/generate', auth('CRON_SECRET'), async (_req, res) => res.json(await generate(store, dayKey())));
+  app.get('/cron/generate', auth('CRON_SECRET'), async (_req, res) => {
+    const result = await generate(store, dayKey());
+    try { result.retention = await prune(store); }
+    catch { result.retention = { status: 'failed' }; console.error('retention_failed'); }
+    res.json(result);
+  });
   app.use('/device', auth('DEVICE_TOKEN'));
   app.get('/device/test-cover.png', async (_req, res) => {
     const png = await store.read('checks/cover.png');

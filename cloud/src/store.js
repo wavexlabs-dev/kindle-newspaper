@@ -1,4 +1,4 @@
-import { get, put, del } from '@vercel/blob';
+import { get, put, del, list } from '@vercel/blob';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { safePath } from './security.js';
@@ -32,6 +32,36 @@ export class Store {
   }
   async json(name) { const b = await this.read(name); return b ? JSON.parse(b) : null; }
   async writeJSON(name, value, options) { return this.write(name, JSON.stringify(value), { ...options, type: 'application/json' }); }
+  async list(prefix) {
+    safePath(prefix.replace(/\/$/, ''));
+    const found = [];
+    if (this.local) {
+      const walk = async (directory, relative = '') => {
+        let entries;
+        try { entries = await fs.readdir(directory, { withFileTypes: true }); }
+        catch (error) { if (error.code === 'ENOENT') return; throw error; }
+        for (const entry of entries) {
+          const name = relative + entry.name;
+          if (entry.isDirectory()) await walk(path.join(directory, entry.name), name + '/');
+          else if (entry.isFile() && name.startsWith(prefix)) {
+            const stat = await fs.stat(path.join(directory, entry.name));
+            found.push({ pathname: name, uploadedAt: stat.mtime });
+          }
+        }
+      };
+      await walk(this.local);
+      return found;
+    }
+    let cursor;
+    do {
+      const page = await list({ prefix, limit: 1000, ...(cursor ? { cursor } : {}) });
+      found.push(...page.blobs.map(blob => ({ pathname: blob.pathname, uploadedAt: blob.uploadedAt })));
+      if (found.length > 10000) throw new Error('Storage listing exceeds maintenance limit');
+      cursor = page.hasMore ? page.cursor : null;
+      if (page.hasMore && !cursor) throw new Error('Storage listing is incomplete');
+    } while (cursor);
+    return found;
+  }
   async remove(name) {
     safePath(name);
     if (this.local) await fs.rm(path.join(this.local, name), { force: true });

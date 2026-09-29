@@ -1,6 +1,6 @@
 # Arquitectura del periódico
 
-Estado: propuesta de implementación. Fecha inicial: 28 de septiembre de 2026.
+Estado: servicio cloud desplegado; integración de cuentas y cliente autónomo pendientes. Fecha inicial: 28 de septiembre de 2026.
 
 ## Objetivo
 
@@ -35,7 +35,7 @@ flowchart TD
 | Endpoint privado | Entregar el manifiesto y los archivos al dispositivo autorizado. |
 | Cliente Kindle | Despertar, descargar, verificar, actualizar la pantalla y volver a reposo. |
 
-El proveedor de alojamiento y el runtime concreto quedan pendientes de selección y prueba. Se requieren programación remota, gestión de secretos, almacenamiento privado y un entorno que pueda renderizar las páginas. El presupuesto y sus supuestos están en [el plan](../PLAN-KINDLE.md#comparación-de-costes-de-operación).
+El servicio usa Node 22/Express en Vercel y Blob privado. Se comprobó en producción el render de una portada sintética, su almacenamiento y descarga autenticada. El cron está preparado para las 06:00 locales, con margen para la entrega de las 08:00; no se ha generado una edición real. El presupuesto y sus supuestos están en [el plan](../PLAN-KINDLE.md#comparación-de-costes-de-operación).
 
 ## Producción de una edición
 
@@ -54,6 +54,8 @@ La selección inicial de medios se hará con el usuario sobre sus suscripciones 
 La comunicación la inicia el dispositivo: **pull por Wi-Fi**. No requiere recibir conexiones entrantes ni abrir puertos del router doméstico. El cliente consulta un manifiesto privado con identificador de edición, fecha, revisión, archivos y comprobaciones de integridad. Sólo descarga y refresca cuando hay una revisión nueva.
 
 La descarga debe escribirse en una ubicación temporal y validarse antes de sustituir la edición local. Si falla, se conserva la anterior. La portada siempre muestra su fecha para que una pantalla desactualizada resulte reconocible, incluso cuando el dispositivo no haya podido despertar.
+
+El servidor conserva por defecto siete días de ediciones y protege siempre la última edición válida, aunque sea anterior a esa ventana. La publicación crea un manifiesto inmutable al final; una carga interrumpida no sustituye la anterior. Estas propiedades se probaron con fallos simulados en el servidor. La implementación equivalente en la caché del Kindle sigue pendiente.
 
 El objetivo de bajo consumo es despertar cerca de la entrega, conectar Wi-Fi, comprobar y descargar la edición, actualizar la pantalla y volver a reposo. El mecanismo de despertar y la frecuencia de reintento se elegirán después de medirlos en el KT2; no se presupone que un temporizador común siga funcionando durante la suspensión.
 

@@ -61,7 +61,7 @@ test('partial publication stays invisible; complete publication is immutable', a
 test('device routes require their own credential, not the admin credential', async t => {
   const oldDevice = process.env.DEVICE_TOKEN, oldAdmin = process.env.ADMIN_TOKEN;
   process.env.DEVICE_TOKEN = 'd'.repeat(64); process.env.ADMIN_TOKEN = 'a'.repeat(64);
-  const server = createApp({ json: async () => null }).listen(0, '127.0.0.1');
+  const server = createApp({ json: async () => null, list: async () => [] }).listen(0, '127.0.0.1');
   await new Promise(resolve => server.once('listening', resolve));
   t.after(() => { server.close(); if (oldDevice === undefined) delete process.env.DEVICE_TOKEN; else process.env.DEVICE_TOKEN = oldDevice; if (oldAdmin === undefined) delete process.env.ADMIN_TOKEN; else process.env.ADMIN_TOKEN = oldAdmin; });
   const base = `http://127.0.0.1:${server.address().port}`;

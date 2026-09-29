@@ -1,19 +1,26 @@
 import { createHash } from 'node:crypto';
 import { DateTime } from 'luxon';
-import { ZONE, nextDelivery } from './edition.js';
+import { ZONE, nextDelivery, dayKey, validDay, validManifest } from './edition.js';
 import { renderEdition } from './render.js';
 import { newsletters, calendar } from './google.js';
 import { editEdition } from './editor.js';
 
 export async function latest(store, now = DateTime.now()) {
-  for (let offset = 0; offset < 7; offset++) {
-    const day = now.setZone(ZONE).minus({ days: offset }).toISODate();
-    const manifest = await store.json(`editions/${day}/manifest.json`);
-    if (manifest) return { ...manifest, next_delivery: nextDelivery(now) };
+  // Discover immutable commit markers, including the last edition after a long
+  // outage. Age alone must not make the last successful edition disappear.
+  const candidates = (await store.list('editions/')).map(entry => entry.pathname)
+    .filter(name => /^editions\/\d{4}-\d{2}-\d{2}\/manifest\.json$/.test(name)).sort().reverse();
+  for (const name of candidates) {
+    const day = name.split('/')[1];
+    if (!validDay(day) || day > dayKey(now)) continue;
+    let manifest;
+    try { manifest = await store.json(name); } catch (error) { if (error instanceof SyntaxError) continue; throw error; }
+    if (validManifest(manifest, day)) return { ...manifest, stale: day !== dayKey(now), next_delivery: nextDelivery(now) };
   }
   return null;
 }
 export async function publish(store, edition) {
+  if (!validDay(edition.day)) throw new Error('Invalid edition date');
   const buffers = await renderEdition(edition);
   const pages = [];
   for (const [i, png] of buffers.entries()) {
@@ -23,11 +30,13 @@ export async function publish(store, edition) {
   }
   await store.writeJSON(`editions/${edition.day}/edition.json`, edition);
   const manifest = { version: 1, day: edition.day, width: 600, height: 800, generated_at: new Date().toISOString(), pages };
+  if (!validManifest(manifest, edition.day)) throw new Error('Invalid rendered edition');
   // Commit marker is immutable and created only after every page and metadata exists.
   await store.writeJSON(`editions/${edition.day}/manifest.json`, manifest);
   return manifest;
 }
 export async function generate(store, day) {
+  if (!validDay(day)) throw new Error('Invalid generation date');
   const existing = await store.json(`editions/${day}/manifest.json`);
   if (existing) return { status: 'already-published', day };
   for (const name of ['OPENAI_API_KEY', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'ENCRYPTION_KEY', 'NEWSLETTER_SENDERS']) {
