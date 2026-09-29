@@ -6,7 +6,7 @@ Objetivo: comprobar el entorno instalado en el Kindle Basic 2014 / KT2 con firmw
 
 El probe directo desde el navegador confirmó `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`. La instalación de KMC está incompleta: el directorio está vacío salvo enlaces colgantes; no están FBInk, KPM, Gandalf ni el hook de arranque. OTA sigue presente y en ejecución. `JAILBROKEN.txt` y el texto `Done` no demostraban una instalación correcta.
 
-La [reparación offline](REPARACION.md) está preparada y copiada con hashes verificados; su ejecución, comprobaciones en ARM y reinicio siguen pendientes. El disparador local ya está configurado para la reparación. Los procedimientos de Biblioteca, búsqueda y probe de este documento conservan el historial de diagnóstico. No se deben interpretar como una secuencia que deba repetirse antes de la reparación.
+La [reparación offline](REPARACION.md) permanece íntegra tras el intento, pero no hay marcadores o informes que acrediten avance de instalación. El disparador actual registra el contexto antes del wrapper para localizar un eventual fallo de entrada; las comprobaciones en ARM y después de reiniciar siguen pendientes. Los procedimientos de Biblioteca, búsqueda y probe de este documento conservan el historial de diagnóstico. No se deben interpretar como una secuencia que deba repetirse antes de la reparación.
 
 ## Entorno revisado
 

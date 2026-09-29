@@ -1,6 +1,6 @@
 # Reparación offline de KMC
 
-**Estado: preparada y copiada con integridad verificada.** El paquete completo tiene 49 archivos y 24,331,704 bytes; se releyó desde `newspaper-repair` en el Kindle y se verificaron sus hashes. Después se configuró el disparador local para llamar a la reparación. La ejecución, la verificación funcional ARM y el reinicio siguen pendientes. Los hashes y resultados se documentan en [REGISTRO.md](REGISTRO.md).
+**Estado: paquete íntegro; sin avance de instalación comprobado.** Los 49 archivos de reparación no cambiaron tras el intento. Las fotos sólo muestran descarga MOBI y por USB no hay marcadores o informes de reparación ni postboot; FBInk y `emergency.sh` siguen ausentes. Esto no demuestra que ningún código se iniciara antes del primer punto observable. Se ha preparado una entrada trazable para un único intento después de un reinicio normal completo. Los hashes y resultados se documentan en [REGISTRO.md](REGISTRO.md).
 
 ## Diagnóstico confirmado
 
@@ -35,7 +35,7 @@ No realiza reset, formateo, downgrade ni respaldo de contenido. La reparación s
 
 La lógica oficial conserva un archivo interno `factory_reset.bck` como parte del parche del sistema. No es un respaldo de libros, notas, cuenta ni otro contenido del usuario. Esta distinción evita presentar la modificación como si no conservara ningún archivo técnico interno.
 
-La cola adaptada copiada tiene SHA-256 `ee351970a14b5c0c199af4ed5591d3a715c886e50b98a379e81a05d50ab40878`. El manifiesto `bundle.sha256` tiene SHA-256 `ef921ebbb16b06b68387ae0d7abb07cc1757f5ade938a1e911b4076f0e2fae44`; el HTML de reparación, `45f23379a96a11fcd038b4e38a931aa609d289ae8a2e799bcefb09beea0aa469`.
+La cola adaptada copiada tiene SHA-256 `ee351970a14b5c0c199af4ed5591d3a715c886e50b98a379e81a05d50ab40878`. El manifiesto `bundle.sha256` tiene SHA-256 `ef921ebbb16b06b68387ae0d7abb07cc1757f5ade938a1e911b4076f0e2fae44`, comprobado durante la copia inicial. Sus 48 entradas se verificaron de nuevo sin errores tras el intento. El HTML inicial de reparación tenía SHA-256 `45f23379a96a11fcd038b4e38a931aa609d289ae8a2e799bcefb09beea0aa469`; posteriormente se sustituyó por la entrada trazable descrita abajo.
 
 ## Ejecución prevista y controles
 
@@ -43,7 +43,11 @@ La cola adaptada copiada tiene SHA-256 `ee351970a14b5c0c199af4ed5591d3a715c886e5
 
 El wrapper usa una guarda de ejecución única y crea un informe privado. Ejecuta la cola con **`RUN_MODE=1` y `JB_SH_DEBUG=0`**, sin debug ni reinicio automático. Usa permisos adecuados para que los procesos del Kindle puedan atravesar los directorios instalados y vuelve a montar la raíz en sólo lectura al terminar, incluso ante salida por error.
 
-La quinta expulsión segura ya está confirmada y se entregó el paso físico: desconectar USB, conectar Wi-Fi y pulsar una vez el botón de WB2. `Reparacion lista` indica activar Modo avión, reiniciar completamente y reconectar; `Revision pendiente` indica reconectar sin reiniciar. Todavía no se ha recibido el resultado de esa ejecución.
+El intento posterior a la quinta expulsión no produjo un informe de reparación. La nueva preparación añade [kindle_repair_launch.sh](../scripts/kindle_repair_launch.sh), que registra UID, sistema, arquitectura y `boot_time` antes de invocar el mismo wrapper. Tiene su propia guarda de ejecución única y conserva las guardas e integridad del paquete existente. Se copió como `newspaper-diagnostics/repair-launch-002.sh`, con SHA-256 `1031a9706c87369d03a091c7441c9590f912e0b0e817fc24f1675d33ec9492c1`.
+
+El HTML actual, [winterbreak2_repair_trace.html](../scripts/winterbreak2_repair_trace.html), llama a ese launcher y tiene SHA-256 `5d0bf643c2a45813d61e42ec184e13c7e2afea4755ad71324a52230f58044ff1`. Ambas copias se releyeron y verificaron sin modificar los 49 archivos del paquete. La sexta expulsión segura está confirmada. Se indicó desconectar USB, realizar un reinicio normal completo antes de abrir WB2, conectar Wi-Fi y pulsar una sola vez. Una instancia antigua de Pillow o del diálogo sigue siendo sólo una hipótesis; el resultado de este nuevo intento está pendiente.
+
+Después del intento, `Reparacion lista` indica activar Modo avión, reiniciar completamente y reconectar; `Revision pendiente` o sólo una descarga indican esperar un minuto y reconectar sin reintentar. La aceptación depende de los informes, no sólo del mensaje visible.
 
 Después ejecuta [kindle_check_repair.sh](../scripts/kindle_check_repair.sh). Deben pasar los hashes completos, FBInk, KPM, Gandalf/SUID, permisos, enlaces, dispatcher, hook de arranque, SH_Integration, clave de actualización y bloqueo OTA. KPM puede inicializar su base de datos durante `version`; no se presenta como una operación estrictamente de sólo lectura.
 
@@ -55,6 +59,7 @@ Sólo si esos controles pasan se prepara `emergency.sh`, con un contenido acotad
 | --- | --- |
 | Preparación local | Snapshot correcto, manifiesto y hashes generados. |
 | Copia al Kindle | Verificación de todos los archivos transferidos; todavía no implica ejecución. |
+| Entrada trazable | `repair-launch-002.txt` con contexto de ejecución y resultado del wrapper; por sí solo no confirma instalación. |
 | Reparación | Informe `repair-001.txt`, código cero, controles funcionales completos y `repair_verified_before_reboot=1`. |
 | Persistencia | Reinicio físico observado, `boot_time` distinto y `postboot-001.txt` con controles completos y `postboot_verified=1`. |
 | Pantalla | Prueba independiente de dibujo y lectura de una portada en el dispositivo. |

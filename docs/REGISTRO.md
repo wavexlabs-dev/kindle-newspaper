@@ -39,6 +39,11 @@ Fecha: 28 de septiembre de 2026. Zona del usuario: America/Mexico_City.
 25. Copiado el paquete completo a `/Volumes/Kindle/newspaper-repair`: 49 archivos y 24,331,704 bytes. Todos se releyeron desde el dispositivo y se verificaron con hashes. SHA-256 de `bundle.sha256`: `ef921ebbb16b06b68387ae0d7abb07cc1757f5ade938a1e911b4076f0e2fae44`.
 26. Después de verificar el paquete se configuró `winterbreak2/dialoger.html` para ejecutar la reparación local. SHA-256 de esta adaptación: `45f23379a96a11fcd038b4e38a931aa609d289ae8a2e799bcefb09beea0aa469`. Esto confirma preparación del disparador, no ejecución de la reparación. Instalación y verificación posterior al reinicio siguen pendientes.
 27. Quinta expulsión segura confirmada: `Disk /Volumes/Kindle ejected`. Se indicó desconectar USB, conectar Wi-Fi y pulsar una vez el botón de WB2 para ejecutar la reparación local. Si aparece `Reparacion lista`, activar Modo avión, reiniciar completamente y reconectar; si aparece `Revision pendiente`, reconectar sin reiniciar. El resultado de ese paso todavía está pendiente.
+28. Tras el intento, las fotos sólo muestran la descarga MOBI. En la siguiente revisión USB no existen `repair-001.lock`, `repair-001.txt`, `repair-001.success` ni resultados `postboot-*`; tampoco FBInk USB ni `emergency.sh`. No hay avance de instalación comprobado. La ausencia de estas señales no permite afirmar de forma absoluta que ningún código haya comenzado a ejecutarse antes del primer punto observable.
+29. Se verificaron sin errores las 48 entradas de `bundle.sha256`. El HTML conserva el hash `45f23379a96a11fcd038b4e38a931aa609d289ae8a2e799bcefb09beea0aa469` y el informe anterior del probe sigue intacto, SHA-256 `87ff38b68eedcf7d752f232c0d7d31d2656e1b256eefdd25f5e7c1c000872377`.
+30. Se preparó una entrada trazable con `scripts/kindle_repair_launch.sh`, copiada como `newspaper-diagnostics/repair-launch-002.sh`: 1,208 bytes, SHA-256 `1031a9706c87369d03a091c7441c9590f912e0b0e817fc24f1675d33ec9492c1`. Registra UID, sistema, arquitectura y `boot_time` antes de llamar al wrapper; mantiene sus controles de integridad y ejecución única.
+31. Tras comprobar el hash anterior, se sustituyó el HTML por `scripts/winterbreak2_repair_trace.html`: 625 bytes, SHA-256 `5d0bf643c2a45813d61e42ec184e13c7e2afea4755ad71324a52230f58044ff1`. Launcher y HTML se releyeron y verificaron; los 49 archivos de reparación no cambiaron. Se propone un reinicio normal completo y un único intento, siguiendo la línea de troubleshooting de WB2. Una instancia antigua de Pillow o del diálogo es una hipótesis, no una causa confirmada. Sexta expulsión todavía pendiente al registrar esta preparación.
+32. Sexta expulsión segura confirmada: `Disk /Volumes/Kindle ejected`. Se indicó desconectar, reiniciar normalmente y por completo antes de abrir WB2, conectar Wi-Fi y pulsar una sola vez. Si aparece `Reparacion lista`, activar Modo avión, reiniciar y reconectar USB; si aparece `Revision pendiente` o sólo descarga, esperar un minuto y reconectar sin reintentar. El resultado de la nueva entrada sigue pendiente.
 
 ## Relleno temporal y decisión OTA
 
@@ -53,19 +58,19 @@ Comprobación al terminar: 8 archivos de relleno, 956,301,312 bytes de contenido
 - Diagnóstico: lectura USB y ejecución root por navegador confirmadas.
 - Paquete WinterBreak2: descargado y verificado.
 - Copia al Kindle: realizada y checksum verificado.
-- Expulsión segura: quinta expulsión confirmada; instrucciones de reparación y ramas de resultado entregadas al usuario.
+- Expulsión segura: sexta expulsión confirmada; entregadas instrucciones de reinicio normal previo y un único intento trazable.
 - Relleno temporal: detenido y parcial; decisión de no completarlo documentada.
 - Ejecución del payload: observada en las fotos y corroborada por el marcador USB.
 - Jailbreak funcional: instalación incompleta confirmada; KMC sin sus archivos y sin hook de arranque.
 - Bloqueo OTA: no instalado; componentes presentes y en ejecución en el diagnóstico.
 - Verificación post-jailbreak: Biblioteca y búsqueda no produjeron informes; el probe directo sí confirmó root y expuso la instalación incompleta.
-- Reparación offline: preparada, copiada y releída con hashes; disparador configurado. Ejecución y reinicio pendientes.
+- Reparación offline: paquete íntegro tras el intento; sin marcadores ni informe de reparación, sin avance de instalación comprobado. Preparada entrada trazable para un único intento después de reiniciar.
 - Causa del fallo de extracción inicial: no establecida.
 - Repositorio GitHub: privado, creado y primera subida a `main` verificada.
 - Backups: ninguno, por instrucción del usuario.
 - Reset y extracción de contenido personal: no realizados.
 - Portada sintética: PNG 600 × 800 en escala de grises generado e inspeccionado visualmente en el Mac. Prueba en la pantalla física pendiente.
 - Scripts de verificación: el probe directo ejecutó y produjo evidencia; la verificación integral de la reparación sigue pendiente.
-- Disparador local WB2: el diagnóstico ejecutó; posteriormente se sustituyó el HTML por la adaptación de reparación verificada. La reparación todavía no se ha ejecutado.
+- Disparador local WB2: ahora llama al launcher trazable `repair-launch-002.sh`. Falta evidencia de que esta nueva entrada haya alcanzado su primer punto observable.
 
 Se actualizará este registro con resultados observados, separando archivos preparados, ejecución y funcionamiento verificado.

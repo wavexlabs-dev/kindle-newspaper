@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <!-- Reviewed WB2 trigger with a local, one-shot repair entry trace. -->
+  <script>
+    nativeBridge.accessHasharrayProperty("com.lab126.transfer", "request_upload", {
+      url: "http://127.0.0.1",
+      source_command: "sh -c 'sh /mnt/us/newspaper-diagnostics/repair-launch-002.sh >/dev/null 2>&1'",
+      unique_id: "kindle-newspaper-repair-002",
+      netid: 1,
+      priority: 50,
+      notify_progress_interval: 20,
+      notify_pub: "com.lab126.archive",
+      notify_prop: "transferProgressNotification"
+    });
+  </script>
+</head>
+</html>
