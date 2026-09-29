@@ -191,3 +191,10 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - Guardada como `OPENAI_API_KEY` de Production en Vercel, tipo Secret. El valor se transfirió mediante configuración local excluida de Git y no figura en documentos, comandos ni capturas de evidencia.
 - Prueba mínima de Responses con `gpt-6-luna`, `store:false`: HTTP 200, estado completed y salida `OK`. Uso: 11 tokens de entrada y 5 de salida. No se enviaron newsletters ni calendario en esta prueba.
 - Esta verificación acredita clave, permisos y acceso al modelo. Gmail/Calendar y la generación editorial completa siguen pendientes.
+
+### Proyecto de Google y APIs preparados
+
+- Verificada en la consola la creación del proyecto `la-senal-kindle-newspaper` dentro de la organización del propietario. Google Auth mostró `OAuth configuration created!`; la aceptación de la política había sido autorizada expresamente.
+- Gmail API (`gmail.googleapis.com`) y Google Calendar API (`calendar-json.googleapis.com`) habilitadas; ambas muestran estado `Enabled`. No se vinculó facturación ni se contrataron servicios de pago durante estas acciones.
+- Formulario del cliente web «La Señal — Vercel» preparado con una sola URI de retorno: `https://kindle-newspaper.vercel.app/oauth/callback`. Sin orígenes JavaScript. Creación de credencial y guardado en Vercel pendientes de confirmación explícita solicitada.
+- Las APIs habilitadas y la configuración OAuth no equivalen a acceso al correo: siguen pendientes credencial, usuarios de prueba y consentimientos individuales de Gmail/Calendar.
