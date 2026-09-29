@@ -132,7 +132,6 @@ function App:download(trigger)
     assert(self:curl('/device/manifest',BASE..'/manifest-download.json',65536),'manifest download failed')
     local m=decode(BASE..'/manifest-download.json');assert(validManifest(m),'invalid manifest')
     if m.server_time then assert(math.abs(os.time()-m.server_time)<300,'Kindle clock differs from server') end
-    self.failures=0
     local name='edition-'..m.day..'-'..(m.revision or 'daily')..'.cbz'
     local target=BASE..'/'..name
     local old=decode(BASE..'/wifi-manifest.json')
@@ -151,6 +150,7 @@ function App:download(trigger)
     write(BASE..'/active.sha256',m.bundle.sha256..'  '..target..'\n')
     write(BASE..'/active-edition.new',name..'\n');assert(os.rename(BASE..'/active-edition.new',BASE..'/active-edition.txt'))
     if trigger=='test_alarm' then write(BASE..'/alarm-test.json',JSON.encode({used=true})) end
+    self.failures=0
     self:scheduleNext(m)
     if self.ui.document.file~=target then
         local receipt=function() self:receipt(m,'opened',trigger);log('edition_opened trigger='..trigger) end

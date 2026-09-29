@@ -2,7 +2,7 @@
 
 [← Inicio](../README.md) · [Prompt para Codex](EMPEZAR-CON-CODEX.md) · [Portadas](PORTADA.md)
 
-**Alcance:** reproduce el prototipo probado y ofrece una ruta para completar la autonomía. No hay instalador universal ni cliente de descarga diaria terminado. Las fases 1–6 describen preparación y lectura manual; la fase 7 identifica el desarrollo que todavía falta.
+**Alcance:** reproduce el prototipo probado y ofrece una ruta para completar la autonomía. No hay instalador universal. Las fases 1–6 describen preparación y lectura manual; la fase 7 presenta un cliente experimental cuya autonomía todavía requiere prueba física.
 
 ## 1. Identifica el Kindle antes de modificarlo
 
@@ -140,20 +140,15 @@ Expulsa USB y abre el acceso al periódico. Si tu instalación dispone de la int
 
 **Resultado:** lectura y navegación comprobadas físicamente. Esta primera edición se carga por USB.
 
-## 7. Entrega inalámbrica y autonomía: trabajo pendiente
+## 7. Entrega inalámbrica y autonomía: ensayo experimental
 
-Ya se probó que el KT2 puede descargar una **portada** por HTTPS y dibujarla. Los scripts `kindle_test_network.sh` y `kindle_test_real_edition.sh` fijan URL, fecha/checksum y carpetas de una instalación concreta: no los copies sin adaptar ni los presentes como un cliente diario.
+El plugin [Pablo’s Time](../kindle/README.md) descarga el CBZ completo por HTTPS, verifica bytes y SHA-256, conserva la edición anterior y solicita a KOReader abrir la nueva. Programa una alarma mediante la API de KOReader para el próximo horario de entrega. Debe permanecer abierto; aún no hay recuperación autónoma tras reiniciar o cerrar el lector.
 
-Para terminar el producto, Codex debe implementar y probar:
+Sigue la instalación y prueba de tres minutos descritas en su README. Los archivos de credenciales y certificados van en el dispositivo, nunca en Git. Los recibos autenticados del servidor distinguen apertura manual y alarma; confirma también la pantalla física.
 
-- Consulta autenticada del manifiesto en tu servidor, descarga de todas las páginas y validación de rutas, dimensiones, bytes y hashes.
-- Cambio atómico a una edición completa y conservación de la anterior ante corte de red o batería.
-- Apertura/refresco de KOReader sin requerir USB ni tocar Biblioteca cada mañana.
-- Alarma compatible con powerd/RTC, suspensión y reconexión Wi-Fi del modelo real.
-- Recuperación tras reinicio, registro útil sin secretos y salida de mantenimiento.
-- Prueba con el ordenador apagado y funcionamiento observado durante 24–48 horas.
+**Estado:** implementación e instalación disponibles; entrega completa, despertar de suspensión y funcionamiento durante 24–48 horas requieren validación física. Los scripts antiguos de una sola portada son diagnósticos históricos, no el cliente nuevo.
 
-`next_delivery` en el manifiesto es un dato para el cliente: **no despierta el Kindle por sí solo**. El cron del servidor tampoco controla la pantalla.
+El cron cloud prepara contenido a las 06:00 CDMX. `next_delivery` indica las 08:00 al plugin; el servidor por sí solo no despierta la pantalla. Si KOReader se cierra, hay que volver a abrir el periódico.
 
 ## Personaliza tu versión
 
