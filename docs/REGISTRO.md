@@ -172,3 +172,8 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - Bundle de CA obtenido de https://curl.se/ca/cacert.pem y comparado con https://curl.se/ca/cacert.pem.sha256: `a41b5d356aea97a529fe27e0f7316d2f9d946d75927476cf9cf1b90637d00505`. Uso acotado a esta prueba; almacén de certificados del sistema intacto.
 - Comprobación actual desde el Mac: `/device/test-cover.png` devuelve la misma imagen de prueba, SHA-256 `35cec4a1d0b69c8a05fa102115557813b6d2252b99206db0041246d61cfdc1ca`. No es aún evidencia de descarga desde el Kindle.
 - Copiados y releídos en el dispositivo: directorio propio `newspaper-network`, certificado, configuración privada de curl, checksum esperado y lanzador. `RUNME.sh` y `documents/Prueba_WiFi.sh` contienen la prueba, SHA-256 `cca85f7b1a977970429e0902b0ae6055ecd21c8bcb01807865a0fabe567afd6b`. La credencial no se registra en Git ni en diagnósticos. Pendiente ejecución física con Wi-Fi conectado y confirmación de pantalla.
+
+### Primera ejecución física de la prueba Wi-Fi
+
+- `network-1.txt`, inicio `2026-09-29T05:30:12Z`: el lanzador se ejecutó; `wifi_state=NA`, curl código 6 (`Could not resolve host: kindle-newspaper.vercel.app`), HTTP 000, salida 1. No hubo imagen descargada ni render. `ssl_verify_result=0` no demuestra validación TLS porque falló DNS antes de establecer conexión.
+- El usuario confirmó que no había revisado si la red figuraba conectada en Ajustes. Próximo paso: conectar/verificar la red desde la interfaz nativa y repetir la misma prueba, sin cambiar certificados, DNS ni servicios.
