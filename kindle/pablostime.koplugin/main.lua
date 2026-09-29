@@ -41,7 +41,10 @@ function App:curl(path,destination,maxsize,post)
     assert(path:sub(1,8)=='/device/' and not path:find('[\r\n]'))
     local cmd='/usr/bin/curl -q --config '..quote(BASE..'/device.curl')..' --cacert '..quote(BASE..'/cacert.pem').." --proto '=https' --tlsv1.2 --noproxy '*' --fail --silent --connect-timeout 10 --max-time 70 --max-filesize "..maxsize..' --output '..quote(destination)
     if post then cmd=cmd.." --header 'Content-Type: application/json' --data-binary @"..quote(post) end
-    return shell(cmd..' '..quote(self.config.origin..path))
+    local status=os.execute(cmd..' '..quote(self.config.origin..path))
+    local ok=status==0 or status==true
+    if not ok then log('https_failed status='..tostring(status)..' manifest='..tostring(path=='/device/manifest')) end
+    return ok
 end
 function App:receipt(m,stage,trigger)
     write(BASE..'/receipt-out.json',JSON.encode({day=m.day,revision=m.revision,stage=stage,pages=#m.pages,trigger=trigger}))
@@ -95,6 +98,11 @@ function App:onReaderReady()
     if not self.active then return end
     local cached=decode(BASE..'/wifi-manifest.json')
     if cached then self:scheduleNext(cached) end
+    if read(BASE..'/wait-for-alarm-once') then
+        os.remove(BASE..'/wait-for-alarm-once')
+        log('reader_open_sync_deferred_for_alarm_test')
+        return
+    end
     self.startTask=function() if not self.closed then self:sync('reader_open') end end
     UIManager:scheduleIn(5,self.startTask)
 end
@@ -119,15 +127,29 @@ function App:sync(trigger)
     NetworkMgr:turnOnWifiAndWaitForConnection(function()
         if self.closed or not self.busy then return end
         UIManager:unschedule(self.watchdog)
-        local ok,err=pcall(function() self:download(trigger) end)
-        self.busy=false;PluginShare.pause_auto_suspend=false
-        if not ok then
-            -- Error detail stays local; do not log curl configuration or token.
-            log('sync_failed '..tostring(err):sub(1,180))
-            self:retryLater()
-        end
+        self:attemptDownload(trigger,1)
     end)
 end
+function App:attemptDownload(trigger,attempt)
+    if self.closed or not self.busy then return end
+    local ok,err=pcall(function() self:download(trigger) end)
+    if ok then
+        self.busy=false;PluginShare.pause_auto_suspend=false
+    else
+        log('sync_failed attempt='..attempt..' '..tostring(err):sub(1,180))
+        if attempt<4 then
+            -- Association can precede usable DNS/routes after Kindle resume.
+            -- Yield to KOReader so its Wi-Fi restoration can finish.
+            log('network_retry_in_15s trigger='..trigger)
+            self.retryTask=function() self:attemptDownload(trigger,attempt+1) end
+            UIManager:scheduleIn(15,self.retryTask)
+        else
+            self.busy=false;PluginShare.pause_auto_suspend=false
+            self:retryLater()
+        end
+    end
+end
+
 function App:download(trigger)
     log('sync_started trigger='..trigger)
     assert(self:curl('/device/manifest',BASE..'/manifest-download.json',65536),'manifest download failed')
@@ -186,6 +208,7 @@ function App:onCloseDocument()
     self.closed=true;self:cancelAlarm()
     if self.startTask then UIManager:unschedule(self.startTask) end
     if self.watchdog then UIManager:unschedule(self.watchdog) end
+    if self.retryTask then UIManager:unschedule(self.retryTask) end
     PluginShare.pause_auto_suspend=false
 end
 return App
