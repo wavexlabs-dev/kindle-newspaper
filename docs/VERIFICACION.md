@@ -4,9 +4,9 @@ Objetivo: comprobar el entorno instalado en el Kindle Basic 2014 / KT2 con firmw
 
 ## Resultado actual
 
-El probe directo desde el navegador confirmó `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`. La instalación de KMC está incompleta: el directorio está vacío salvo enlaces colgantes; no están FBInk, KPM, Gandalf ni el hook de arranque. OTA sigue presente y en ejecución. `JAILBROKEN.txt` y el texto `Done` no demostraban una instalación correcta.
+El probe directo confirmó root y detectó inicialmente KMC incompleto. La reparación posterior verificó los 38 archivos y aplicó los parches con `installer_exit_code=0`. El wrapper se detuvo por `root_remount_failed` (`mount: / is busy`) antes del checker: **las comprobaciones funcionales todavía no se ejecutaron**. FBInk USB ya coincide con el oficial; esto acredita presencia e integridad de esa copia, no inicialización del framebuffer.
 
-La [reparación offline](REPARACION.md) permanece íntegra tras el intento, pero no hay marcadores o informes que acrediten avance de instalación. El disparador actual registra el contexto antes del wrapper para localizar un eventual fallo de entrada; las comprobaciones en ARM y después de reiniciar siguen pendientes. Los procedimientos de Biblioteca, búsqueda y probe de este documento conservan el historial de diagnóstico. No se deben interpretar como una secuencia que deba repetirse antes de la reparación.
+Se copió y verificó una [comprobación independiente después de reiniciar](REPARACION.md#comprobación-independiente-tras-el-remount-ocupado). Exige el resultado previo observado, paquete íntegro y un `boot_time` diferente; invoca el checker sin montar ni reinstalar. La séptima expulsión está confirmada; el resultado `verify-after-restart-003` está pendiente. No modifica el fallo previo ni fabrica un marcador de reparación correcta. Los procedimientos de Biblioteca, búsqueda y navegador de este documento son historial; el próximo paso no requiere WB2.
 
 ## Entorno revisado
 
@@ -77,9 +77,9 @@ Pasos utilizados para el diagnóstico: expulsar, conectar Wi-Fi, abrir `https://
 
 [kindle_check_repair.sh](../scripts/kindle_check_repair.sh) compara los 38 archivos instalados contra sus hashes y comprueba ejecutables, permisos y enlaces de plataforma; inicialización de FBInk; salida válida y código cero de KPM; copia USB de FBInk; hook de arranque; dispatcher; registro de SH_Integration; clave de actualización; OTA renombrado y detenido; y raíz montada en sólo lectura. La ejecución de `kpm version` conserva el efecto de inicialización de base de datos descrito anteriormente.
 
-El wrapper de reparación exige que todas estas pruebas pasen antes de marcar éxito previo al reinicio y habilitar el diagnóstico de arranque. Este último usa el hook oficial mediante un `emergency.sh` revisado y una guarda de ejecución única; vuelve a ejecutar los mismos controles. No reinicia automáticamente.
+El flujo original exigía todas estas pruebas antes de marcar éxito y habilitar su diagnóstico de arranque. No llegó a esa fase por el remount ocupado. La nueva comprobación utiliza el hook oficial mediante un `emergency.sh` revisado y una guarda de ejecución única, con sus propias precondiciones y resultado independiente. No reinicia automáticamente, no fuerza montajes ni reinstala.
 
-El éxito requiere informes separados de instalación y arranque, códigos cero, `failed_checks=0` y evidencia de un reinicio real mediante `boot_time` distinto. El marcador `repair-001.success` aislado tampoco sustituye la inspección de los informes. La copia, ejecución y resultados concretos se registrarán en [REGISTRO.md](REGISTRO.md).
+Para este resultado se debe conservar `repair_exit_code=1` como hecho histórico y obtener un informe independiente `verify-after-restart-003.txt` con `different_boot=1`, `failed_checks=0`, `verified_after_restart=1` y `restart_verification_rc=0`. El marcador `.success` aislado no sustituye el informe. La copia, ejecución y resultados concretos se registran en [REGISTRO.md](REGISTRO.md).
 
 Cinco pruebas del verificador pasaron en el Mac con un sistema de archivos y comandos simulados. Incluyen corrupción de payload, proceso OTA activo y respuestas KPM inválidas. La comprobación SUID se simula por las restricciones del sandbox macOS. Esta validación prueba la lógica del verificador; no prueba ejecución ARM ni comportamiento de arranque en el Kindle.
 

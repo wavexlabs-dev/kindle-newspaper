@@ -1,10 +1,10 @@
 # Reparación offline de KMC
 
-**Estado: paquete íntegro; sin avance de instalación comprobado.** Los 49 archivos de reparación no cambiaron tras el intento. Las fotos sólo muestran descarga MOBI y por USB no hay marcadores o informes de reparación ni postboot; FBInk y `emergency.sh` siguen ausentes. Esto no demuestra que ningún código se iniciara antes del primer punto observable. Se ha preparado una entrada trazable para un único intento después de un reinicio normal completo. Los hashes y resultados se documentan en [REGISTRO.md](REGISTRO.md).
+**Estado: instalación aplicada; verificación funcional pendiente.** El intento trazable ejecutó como root y la cola oficial terminó con `installer_exit_code=0` después de verificar los 38 archivos y aplicar los parches. El wrapper falló al volver a montar `/` en sólo lectura (`mount: / is busy`) y se detuvo antes de ejecutar el checker. FBInk USB ya coincide con el oficial. Está copiada y verificada una comprobación independiente para el siguiente reinicio; su resultado aún no se ha recibido.
 
 ## Diagnóstico confirmado
 
-El probe ejecutado por el disparador del navegador informó `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`. El acceso root funciona por esa vía, pero KMC está vacío salvo enlaces colgantes. Faltan FBInk, KPM, Gandalf y el hook de arranque; OTA está presente y en ejecución. El comprobante `JAILBROKEN.txt` del primer instalador no acreditaba una instalación completa.
+El probe inicial informó `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`, pero encontró KMC vacío salvo enlaces colgantes, sin componentes ni hook y con OTA activo. Ese diagnóstico motivó la reparación. El comprobante `JAILBROKEN.txt` del primer instalador no acreditaba una instalación completa. La reparación posterior cambió ese estado; su resultado observado se detalla abajo.
 
 La causa exacta de la extracción fallida no está establecida. El XZ del instalador usa un diccionario de 64 MiB; su tar ocupa 24,330,240 bytes y el diagnóstico observó 26,332 KiB libres en `/tmp`. Son restricciones relevantes de recursos, no una prueba causal. Esta reparación evita la descompresión XZ en el Kindle.
 
@@ -37,21 +37,29 @@ La lógica oficial conserva un archivo interno `factory_reset.bck` como parte de
 
 La cola adaptada copiada tiene SHA-256 `ee351970a14b5c0c199af4ed5591d3a715c886e50b98a379e81a05d50ab40878`. El manifiesto `bundle.sha256` tiene SHA-256 `ef921ebbb16b06b68387ae0d7abb07cc1757f5ade938a1e911b4076f0e2fae44`, comprobado durante la copia inicial. Sus 48 entradas se verificaron de nuevo sin errores tras el intento. El HTML inicial de reparación tenía SHA-256 `45f23379a96a11fcd038b4e38a931aa609d289ae8a2e799bcefb09beea0aa469`; posteriormente se sustituyó por la entrada trazable descrita abajo.
 
-## Ejecución prevista y controles
+## Ejecución de la reparación y controles
 
 [kindle_repair_offline.sh](../scripts/kindle_repair_offline.sh) sólo acepta Linux, UID 0, `armv7l` y firmware `5.12.2.2`. Comprueba el propietario del directorio de preparación, integridad del paquete, utilidades, espacio en `/var/local` y ausencia de controles o actualizaciones inesperadas. Si encuentra KPM instalado o un `emergency.sh` previo, se detiene para revisar el cambio de estado.
 
-El wrapper usa una guarda de ejecución única y crea un informe privado. Ejecuta la cola con **`RUN_MODE=1` y `JB_SH_DEBUG=0`**, sin debug ni reinicio automático. Usa permisos adecuados para que los procesos del Kindle puedan atravesar los directorios instalados y vuelve a montar la raíz en sólo lectura al terminar, incluso ante salida por error.
+El wrapper usa una guarda de ejecución única y crea un informe privado. Ejecuta la cola con **`RUN_MODE=1` y `JB_SH_DEBUG=0`**, sin debug ni reinicio automático. Restaura los permisos del archivo oficial e intenta volver a montar la raíz en sólo lectura al terminar, incluso ante salida por error. Ese intento de remount falló con EBUSY en esta ejecución; no se presenta como completado.
 
 El intento posterior a la quinta expulsión no produjo un informe de reparación. La nueva preparación añade [kindle_repair_launch.sh](../scripts/kindle_repair_launch.sh), que registra UID, sistema, arquitectura y `boot_time` antes de invocar el mismo wrapper. Tiene su propia guarda de ejecución única y conserva las guardas e integridad del paquete existente. Se copió como `newspaper-diagnostics/repair-launch-002.sh`, con SHA-256 `1031a9706c87369d03a091c7441c9590f912e0b0e817fc24f1675d33ec9492c1`.
 
-El HTML actual, [winterbreak2_repair_trace.html](../scripts/winterbreak2_repair_trace.html), llama a ese launcher y tiene SHA-256 `5d0bf643c2a45813d61e42ec184e13c7e2afea4755ad71324a52230f58044ff1`. Ambas copias se releyeron y verificaron sin modificar los 49 archivos del paquete. La sexta expulsión segura está confirmada. Se indicó desconectar USB, realizar un reinicio normal completo antes de abrir WB2, conectar Wi-Fi y pulsar una sola vez. Una instancia antigua de Pillow o del diálogo sigue siendo sólo una hipótesis; el resultado de este nuevo intento está pendiente.
+El HTML [winterbreak2_repair_trace.html](../scripts/winterbreak2_repair_trace.html), SHA-256 `5d0bf643c2a45813d61e42ec184e13c7e2afea4755ad71324a52230f58044ff1`, llamó a ese launcher tras la sexta expulsión y el reinicio normal. Su informe confirmó UID 0, Linux, `armv7l`, `boot_time=1790643805` y código 1 del wrapper. La causa del intento anterior sin informe continúa sin establecerse; una instancia antigua de Pillow o del diálogo era sólo una hipótesis.
 
-Después del intento, `Reparacion lista` indica activar Modo avión, reiniciar completamente y reconectar; `Revision pendiente` o sólo una descarga indican esperar un minuto y reconectar sin reintentar. La aceptación depende de los informes, no sólo del mensaje visible.
+La foto posterior mostró `Done` y `Revision pendiente`. El informe confirma preflight, hashes y aplicación de permisos, Gandalf, SH_Integration, claves, dispatcher, banderas, hook y renombrado OTA. El instalador devolvió cero; tanto su montaje final como el del wrapper informaron `mount: / is busy`. El wrapper registró `repair_error=root_remount_failed` y `repair_exit_code=1`. No se conoce el proceso específico que causó EBUSY; no se ha forzado el montaje ni repetido la instalación.
 
-Después ejecuta [kindle_check_repair.sh](../scripts/kindle_check_repair.sh). Deben pasar los hashes completos, FBInk, KPM, Gandalf/SUID, permisos, enlaces, dispatcher, hook de arranque, SH_Integration, clave de actualización y bloqueo OTA. KPM puede inicializar su base de datos durante `version`; no se presenta como una operación estrictamente de sólo lectura.
+El flujo debía ejecutar después [kindle_check_repair.sh](../scripts/kindle_check_repair.sh), pero **no llegó a ejecutarlo**. Tampoco creó `repair-001.success`, resultados postboot ni `emergency.sh`. FBInk USB sí se comprobó: 1,382,536 bytes y hash idéntico al oficial. Se verificaron de nuevo las 48 entradas del paquete y el hash de `bundle.sha256`. Los avisos EIPS sobre texto fuera del área 600 × 800 no prueban daño; ni esos avisos ni `Done` sustituyen los controles funcionales.
 
-Sólo si esos controles pasan se prepara `emergency.sh`, con un contenido acotado que llama a [kindle_postboot_repair.sh](../scripts/kindle_postboot_repair.sh). El hook oficial lo utiliza después del reinicio para repetir las comprobaciones una sola vez. No es una shell remota ni descarga código. La guarda del probe evita repeticiones posteriores.
+La verificación originalmente prevista en [kindle_postboot_repair.sh](../scripts/kindle_postboot_repair.sh) dependía de completar ese flujo. Se conserva su resultado fallido y se utiliza una comprobación independiente, sin crear artificialmente `repair-001.success`.
+
+## Comprobación independiente tras el remount ocupado
+
+[kindle_verify_after_restart.sh](../scripts/kindle_verify_after_restart.sh) exige el informe previo con `installer_exit_code=0` y `repair_error=root_remount_failed`, el paquete íntegro y un `boot_time` distinto. Ejecuta el checker existente sin modificarlo, sin instalar, montar ni cambiar ajustes del sistema. La comprobación de `kpm version` puede inicializar su propia base de datos.
+
+Se copió como `newspaper-diagnostics/verify-after-restart-003.sh`: 1,829 bytes, SHA-256 `3887759199a74e169cef22369fcc01bc6e2bce07143ebd51f9de5d9fd01766a9`. La entrada [kindle_boot_verify_entry.sh](../scripts/kindle_boot_verify_entry.sh) se copió como `emergency.sh`: 153 bytes, SHA-256 `0d9fe0d58a7c78e573b651392fcf0e2a266d380df93f982d22fbbd63f4618015`. Ambas copias se verificaron. La entrada llama únicamente al verificador mediante el hook oficial; la guarda permite una sola ejecución.
+
+**Séptima expulsión segura confirmada.** Se indicó desconectar USB, activar Modo avión, reiniciar normalmente desde el menú, esperar a Inicio más un minuto y reconectar USB. No se vuelve a WB2. El resultado `verify-after-restart-003` está pendiente.
 
 ## Evidencia requerida
 
@@ -60,8 +68,8 @@ Sólo si esos controles pasan se prepara `emergency.sh`, con un contenido acotad
 | Preparación local | Snapshot correcto, manifiesto y hashes generados. |
 | Copia al Kindle | Verificación de todos los archivos transferidos; todavía no implica ejecución. |
 | Entrada trazable | `repair-launch-002.txt` con contexto de ejecución y resultado del wrapper; por sí solo no confirma instalación. |
-| Reparación | Informe `repair-001.txt`, código cero, controles funcionales completos y `repair_verified_before_reboot=1`. |
-| Persistencia | Reinicio físico observado, `boot_time` distinto y `postboot-001.txt` con controles completos y `postboot_verified=1`. |
+| Reparación aplicada | `repair-001.txt` conserva `installer_exit_code=0` y `repair_exit_code=1` por remount ocupado; no se reescribe como éxito. |
+| Funcionalidad y persistencia | Reinicio real y `verify-after-restart-003.txt` con `different_boot=1`, `failed_checks=0`, `verified_after_restart=1` y `restart_verification_rc=0`. |
 | Pantalla | Prueba independiente de dibujo y lectura de una portada en el dispositivo. |
 
 Ni un archivo `.success` ni un mensaje en pantalla sustituyen la lectura del informe. Una falta de informe, un control fallido o un código no cero mantiene el resultado pendiente de revisión.

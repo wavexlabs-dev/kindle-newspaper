@@ -6,9 +6,9 @@ El servicio en la nube investigará a partir de newsletters seleccionadas de Gma
 
 ## Estado del proyecto
 
-**Acceso root confirmado; instalación incompleta.** El diagnóstico ejecutado desde el navegador confirma `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`. KMC está vacío salvo enlaces colgantes; faltan FBInk, KPM, Gandalf y el hook de arranque. Los componentes OTA siguen presentes y en ejecución. El marcador `JAILBROKEN.txt` no demostraba una instalación funcional.
+**Instalación aplicada; verificación funcional pendiente.** La reparación ejecutó como root, verificó los 38 archivos oficiales y terminó la cola del instalador con código cero. El wrapper se detuvo después porque no pudo volver a montar `/` en sólo lectura: `mount: / is busy`. No llegó a ejecutar las comprobaciones funcionales ni generó un marcador de éxito.
 
-La [reparación offline](docs/REPARACION.md) sigue íntegra en el Kindle, pero el intento sólo mostró la descarga MOBI y no dejó marcadores o informes de reparación. **No hay avance de instalación comprobado.** Se preparó un nuevo disparador que registra el contexto antes de llamar al wrapper existente, para repetir una sola vez después de un reinicio normal completo. La verificación funcional y posterior al reinicio siguen pendientes. Las cinco pruebas del verificador pasaron en el Mac con componentes simulados; no son pruebas de ejecución ARM en el Kindle.
+FBInk ya está presente en USB y coincide con el archivo oficial. Se copió y verificó una comprobación independiente tras un reinicio normal, sin reinstalar ni forzar el montaje. La séptima expulsión está confirmada y se indicó Modo avión, reinicio completo, esperar un minuto y reconectar USB; no requiere volver a WB2. Los detalles están en [REPARACION.md](docs/REPARACION.md). Las cinco pruebas del verificador pasaron en el Mac con componentes simulados; la prueba funcional en ARM sigue pendiente.
 
 El proyecto está documentado en el repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper). **El marcador del instalador todavía no demuestra un jailbreak funcional.** Tampoco están conectadas las cuentas, desplegado el servicio cloud ni probada la actualización automática. El estado de cada intervención se registra en [docs/REGISTRO.md](docs/REGISTRO.md).
 

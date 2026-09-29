@@ -4,9 +4,9 @@ Dispositivo del proyecto: Kindle Basic 2014 / 7.ª generación / KT2, prefijo de
 
 ## Estado
 
-El usuario ejecutó el instalador: fotos con `Done` y `Restarting GUI`, y marcador `documents/JAILBROKEN.txt` de jb.sh v1.3.7 comprobado por USB. El diagnóstico posterior desde el navegador confirmó ejecución con `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`, pero **la instalación quedó incompleta**: KMC está vacío salvo enlaces colgantes, faltan FBInk, KPM, Gandalf y el hook de arranque, y OTA permanece presente y en ejecución. El marcador no demostraba instalación funcional ni persistencia.
+**Instalación aplicada; verificación funcional pendiente.** El primer instalador dejó un marcador, pero el diagnóstico confirmó KMC incompleto. La reparación posterior ejecutó como root, verificó los 38 hashes y aplicó la cola oficial con `installer_exit_code=0`. El wrapper se detuvo después con `root_remount_failed` y `mount: / is busy`, antes de ejecutar sus comprobaciones funcionales.
 
-Se ha preparado una [reparación offline](REPARACION.md) basada en los 38 archivos oficiales del instalador fijado por hash. Sus 49 archivos siguen íntegros tras el intento, pero no hay informe ni avance de instalación comprobado. El disparador actual añade una entrada trazable antes del wrapper, preparada para un único intento tras reiniciar normalmente. La verificación funcional y posterior al reinicio siguen pendientes. Los hashes de esta intervención constan en [REGISTRO.md](REGISTRO.md).
+FBInk USB ya coincide con el archivo oficial. Se copió y verificó una comprobación independiente mediante el hook de arranque para verificar componentes, OTA y raíz en sólo lectura tras un reinicio normal. La séptima expulsión está confirmada y el resultado está pendiente. No requiere repetir WB2, reinstalar ni forzar el montaje. Los resultados y hashes están en [REGISTRO.md](REGISTRO.md) y el procedimiento en [REPARACION.md](REPARACION.md).
 
 El `dialoger.html` original fue sustituido por una adaptación diagnóstica que ejecutó un probe local. Los hashes de release de esta página identifican el original descargado; no deben usarse para identificar adaptaciones posteriores. La sección del paso físico conserva el procedimiento inicial, ya realizado; no es una indicación de repetir el instalador remoto.
 
@@ -71,7 +71,7 @@ El acceso USB disponible permite copiar archivos; no controla la pantalla del Ki
 
 ## Verificación posterior
 
-El diagnóstico directo ya permitió identificar la instalación incompleta. La siguiente fase es la reparación preparada y sus comprobaciones integrales descritas en [REPARACION.md](REPARACION.md), seguida de evidencia tras un reinicio real. La causa exacta del fallo de extracción inicial no está establecida.
+El diagnóstico directo identificó la instalación incompleta y la reparación posterior ya aplicó los archivos y parches. La siguiente fase es la comprobación independiente tras reiniciar descrita en [REPARACION.md](REPARACION.md). No están establecidas la causa exacta del fallo de extracción inicial ni la del remount ocupado posterior.
 
 Comprobar `documents/JAILBROKEN.txt` si lo genera el instalador, la versión anotada y cualquier salida de instalación. El marcador por sí solo no basta: verificar que, tras reiniciar, funciona una aplicación o scriptlet compatible y el gestor de paquetes. Inspeccionar el bloqueo OTA antes de retirar el relleno creado por este proyecto. El procedimiento concreto se documenta en [VERIFICACION.md](VERIFICACION.md).
 

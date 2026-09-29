@@ -44,6 +44,12 @@ Fecha: 28 de septiembre de 2026. Zona del usuario: America/Mexico_City.
 30. Se preparó una entrada trazable con `scripts/kindle_repair_launch.sh`, copiada como `newspaper-diagnostics/repair-launch-002.sh`: 1,208 bytes, SHA-256 `1031a9706c87369d03a091c7441c9590f912e0b0e817fc24f1675d33ec9492c1`. Registra UID, sistema, arquitectura y `boot_time` antes de llamar al wrapper; mantiene sus controles de integridad y ejecución única.
 31. Tras comprobar el hash anterior, se sustituyó el HTML por `scripts/winterbreak2_repair_trace.html`: 625 bytes, SHA-256 `5d0bf643c2a45813d61e42ec184e13c7e2afea4755ad71324a52230f58044ff1`. Launcher y HTML se releyeron y verificaron; los 49 archivos de reparación no cambiaron. Se propone un reinicio normal completo y un único intento, siguiendo la línea de troubleshooting de WB2. Una instancia antigua de Pillow o del diálogo es una hipótesis, no una causa confirmada. Sexta expulsión todavía pendiente al registrar esta preparación.
 32. Sexta expulsión segura confirmada: `Disk /Volumes/Kindle ejected`. Se indicó desconectar, reiniciar normalmente y por completo antes de abrir WB2, conectar Wi-Fi y pulsar una sola vez. Si aparece `Reparacion lista`, activar Modo avión, reiniciar y reconectar USB; si aparece `Revision pendiente` o sólo descarga, esperar un minuto y reconectar sin reintentar. El resultado de la nueva entrada sigue pendiente.
+33. Tras el reinicio y el intento trazable, el usuario aportó una foto con `Done` y `Revision pendiente`. El informe `repair-launch-002.txt` confirma UID 0, Linux, `armv7l`, `boot_time=1790643805` y `repair_wrapper_rc=1`.
+34. `repair-001.txt` confirma preflight correcto y los 38 hashes del payload. La cola del instalador aplicó permisos, Gandalf, SH_Integration, claves, dispatcher, banderas, parches de arranque y renombrado OTA; terminó con `installer_exit_code=0`. Tanto el montaje final del instalador como el del wrapper informaron `mount: / is busy`; el wrapper registró `repair_error=root_remount_failed` y `repair_exit_code=1`. Se detuvo antes de las comprobaciones funcionales: no se ejecutaron y no hay `repair-001.success`, resultados postboot ni `emergency.sh` procedente de ese flujo.
+35. FBInk USB ahora existe, ocupa 1,382,536 bytes y su hash coincide con el oficial. Se verificaron de nuevo las 48 entradas de `bundle.sha256` y el hash del manifiesto `ef921ebbb16b06b68387ae0d7abb07cc1757f5ade938a1e911b4076f0e2fae44`. La causa específica de EBUSY no está establecida. Los avisos EIPS de texto fuera de las coordenadas de la pantalla 600 × 800 no prueban daño; el código cero del instalador tampoco sustituye la verificación funcional.
+36. Preparados `scripts/kindle_verify_after_restart.sh` y `scripts/kindle_boot_verify_entry.sh` para una comprobación independiente mediante el hook de arranque oficial. Exige el log de instalador con código cero y error de remount, integridad del paquete y `boot_time` diferente. Ejecuta el checker existente sin reinstalar, forzar montajes ni crear un `repair-001.success` artificial. `kpm version` puede inicializar su propia base de datos. Preparación de copia en curso; el siguiente paso previsto es Modo avión, reinicio normal completo, esperar un minuto y reconectar USB, sin WB2.
+37. Copiados y verificados `newspaper-diagnostics/verify-after-restart-003.sh` (1,829 bytes, SHA-256 `3887759199a74e169cef22369fcc01bc6e2bce07143ebd51f9de5d9fd01766a9`) y `emergency.sh` (153 bytes, SHA-256 `0d9fe0d58a7c78e573b651392fcf0e2a266d380df93f982d22fbbd63f4618015`). No se modificó el paquete de reparación ni se creó un marcador artificial de éxito.
+38. Séptima expulsión segura confirmada. Se indicó desconectar, activar Modo avión, reiniciar normalmente desde el menú, esperar a Inicio más un minuto y reconectar USB. No se utiliza WB2 en este paso. Prueba `verify-after-restart-003` pendiente.
 
 ## Relleno temporal y decisión OTA
 
@@ -58,19 +64,21 @@ Comprobación al terminar: 8 archivos de relleno, 956,301,312 bytes de contenido
 - Diagnóstico: lectura USB y ejecución root por navegador confirmadas.
 - Paquete WinterBreak2: descargado y verificado.
 - Copia al Kindle: realizada y checksum verificado.
-- Expulsión segura: sexta expulsión confirmada; entregadas instrucciones de reinicio normal previo y un único intento trazable.
+- Expulsión segura: séptima expulsión confirmada; entregadas instrucciones de Modo avión y reinicio normal para verificación, sin WB2.
 - Relleno temporal: detenido y parcial; decisión de no completarlo documentada.
 - Ejecución del payload: observada en las fotos y corroborada por el marcador USB.
-- Jailbreak funcional: instalación incompleta confirmada; KMC sin sus archivos y sin hook de arranque.
-- Bloqueo OTA: no instalado; componentes presentes y en ejecución en el diagnóstico.
+- Instalación KMC: aplicada por la reparación, con 38 hashes correctos y `installer_exit_code=0`; verificación funcional aún no ejecutada.
+- Bloqueo OTA: renombrado aplicado según el log; estado de procesos y persistencia pendientes de comprobar tras reiniciar.
 - Verificación post-jailbreak: Biblioteca y búsqueda no produjeron informes; el probe directo sí confirmó root y expuso la instalación incompleta.
-- Reparación offline: paquete íntegro tras el intento; sin marcadores ni informe de reparación, sin avance de instalación comprobado. Preparada entrada trazable para un único intento después de reiniciar.
+- Reparación offline: ejecutada; el wrapper salió con código 1 por `root_remount_failed` antes del checker. Paquete íntegro y FBInk USB coincide con el oficial.
+- Raíz en sólo lectura: no confirmada; el remount devolvió EBUSY. Causa específica desconocida, sin montaje forzado ni reinstalación.
+- Verificación tras reiniciar: `verify-after-restart-003` y entrada de arranque copiados y verificados; resultado independiente pendiente.
 - Causa del fallo de extracción inicial: no establecida.
 - Repositorio GitHub: privado, creado y primera subida a `main` verificada.
 - Backups: ninguno, por instrucción del usuario.
 - Reset y extracción de contenido personal: no realizados.
 - Portada sintética: PNG 600 × 800 en escala de grises generado e inspeccionado visualmente en el Mac. Prueba en la pantalla física pendiente.
 - Scripts de verificación: el probe directo ejecutó y produjo evidencia; la verificación integral de la reparación sigue pendiente.
-- Disparador local WB2: ahora llama al launcher trazable `repair-launch-002.sh`. Falta evidencia de que esta nueva entrada haya alcanzado su primer punto observable.
+- Disparador local WB2: `repair-launch-002.sh` ejecutó como root. El siguiente paso utiliza el hook de arranque; no requiere volver a WB2.
 
 Se actualizará este registro con resultados observados, separando archivos preparados, ejecución y funcionamiento verificado.
