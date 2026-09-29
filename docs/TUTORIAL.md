@@ -146,7 +146,7 @@ El plugin [Pablo’s Time](../kindle/README.md) descarga el CBZ completo por HTT
 
 Sigue la instalación y prueba de tres minutos descritas en su README. Los archivos de credenciales y certificados van en el dispositivo, nunca en Git. Los recibos autenticados del servidor distinguen apertura manual y alarma; confirma también la pantalla física.
 
-**Estado:** implementación e instalación disponibles; entrega completa, despertar de suspensión y funcionamiento durante 24–48 horas requieren validación física. Los scripts antiguos de una sola portada son diagnósticos históricos, no el cliente nuevo.
+**Estado:** entrega completa, despertar de suspensión y apertura de una edición distinta comprobados en una prueba de tres minutos (recibo `test_alarm` y confirmación visual del usuario). La ejecución diaria a las 08:00 y el funcionamiento durante 24–48 horas siguen pendientes de observación. Los scripts antiguos de una sola portada son diagnósticos históricos, no el cliente nuevo.
 
 El cron cloud prepara contenido a las 06:00 CDMX. `next_delivery` indica las 08:00 al plugin; el servidor por sí solo no despierta la pantalla. Si KOReader se cierra, hay que volver a abrir el periódico.
 

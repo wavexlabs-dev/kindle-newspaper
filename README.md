@@ -8,7 +8,7 @@ Newsletters de IA y tecnología, noticias contrastadas, una portada ilustrada di
   <img src="docs/images/01-cover.png" width="420" alt="Portada ilustrada de Pablo’s Time: Antes de dejarlo volar, 29 de septiembre de 2026">
 </p>
 
-**Tutorial de un prototipo funcional, no un instalador universal.** Se han probado generación cloud, lectura de Gmail y todos los calendarios, una portada recibida por Wi-Fi y apertura de la edición en KOReader. **El cliente de descarga completa y alarma está implementado como plugin experimental; falta validar físicamente la entrega y el despertar automático a las 08:00.** Conectar cualquier Kindle por USB no basta para completar esas funciones.
+**Tutorial de un prototipo funcional, no un instalador universal.** Se han probado generación cloud, lectura de Gmail y todos los calendarios, una portada recibida por Wi-Fi y apertura de la edición en KOReader. **La prueba de alarma de tres minutos ya despertó el Kindle, descargó una edición distinta por Wi-Fi y la abrió; el usuario confirmó la pantalla. La ejecución diaria a las 08:00 y la autonomía prolongada siguen pendientes de observación.** Conectar cualquier Kindle por USB no basta para completar esas funciones.
 
 ## Empieza aquí
 
@@ -100,7 +100,7 @@ Estado documentado al **29 de septiembre de 2026**:
 | Portada ilustrada | Diseño con Image Gen y prueba API completada con GPT Image 2.5 Flare |
 | Edición multipágina | CBZ abierto en KOReader; salida normal registrada. Edición corregida de 7 páginas restaurada por USB |
 | Recuperación de borrado | Documento restaurado; al terminar se configura volver a portada |
-| Nueva edición diaria en el lector | **Plugin experimental instalado; prueba física pendiente** |
+| Nueva edición diaria en el lector | **Descarga y apertura de nueva edición comprobadas mediante alarma de prueba** |
 | Despertar y mostrar portada a las 08:00 | **Pendiente de prueba física** |
 | Funcionamiento autónomo 24–48 horas | **Pendiente** |
 

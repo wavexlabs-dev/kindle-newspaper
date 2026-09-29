@@ -27,3 +27,7 @@ El cron cloud genera a las 06:00 CDMX; la alarma del lector apunta a las 08:00. 
 El registro físico mostró `alarm_fired trigger=test_alarm`, seguido de fallo inmediato al descargar el manifiesto. Un reintento posterior sí abrió la edición anterior. Esto comprueba el disparo, pero no una entrega completa al despertar; DNS/rutas aún no disponibles es una hipótesis, no un diagnóstico confirmado por código de curl.
 
 Se añadieron hasta cuatro intentos separados por 15 segundos, dejando procesar eventos de red de KOReader, y registro numérico del resultado de curl. La corrección requiere repetir la prueba física. El marcador privado `wait-for-alarm-once` omite solamente la sincronización de la siguiente apertura, para mantener la portada anterior hasta activar la prueba; se consume al abrir y no afecta las alarmas posteriores.
+
+## Resultado confirmado de la prueba completa
+
+El 2026-09-29 a las 22:31:06 UTC el servidor recibió `stage=opened`, `trigger=test_alarm` para la revisión `1790719659722`, de 8 páginas. El usuario confirmó visualmente que funcionó. La portada pasó a «Hilos nuevos, manos al mando» después de despertar y descargar por Wi-Fi. Esto verifica el ensayo de tres minutos; la ejecución diaria a las 08:00 y la autonomía durante 24–48 horas siguen pendientes de observación. KOReader debe permanecer abierto, incluso al suspender el dispositivo.
