@@ -4,6 +4,9 @@ import { equalSecret } from './security.js';
 import { startOAuth, finishOAuth } from './google.js';
 import { dayKey } from './edition.js';
 import { latest, generate } from './publish.js';
+import { renderEdition } from './render.js';
+import { deliverySample } from './sample.js';
+import { createHash } from 'node:crypto';
 
 export function createApp(store = new Store()) {
   const app = express();
@@ -31,8 +34,19 @@ export function createApp(store = new Store()) {
     latest: (await latest(store))?.day || null, today: await store.json(`runs/${dayKey()}.json`),
   }));
   app.post('/admin/generate', auth('ADMIN_TOKEN'), async (_req, res) => res.json(await generate(store, dayKey())));
+  app.post('/admin/test-delivery', auth('ADMIN_TOKEN'), async (_req, res) => {
+    const [png] = await renderEdition(deliverySample(dayKey()));
+    // Explicit test object, never published as the daily edition.
+    await store.write('checks/cover.png', png, { overwrite: true, type: 'image/png' });
+    res.json({ test: true, path: '/device/test-cover.png', bytes: png.length, sha256: createHash('sha256').update(png).digest('hex') });
+  });
   app.get('/cron/generate', auth('CRON_SECRET'), async (_req, res) => res.json(await generate(store, dayKey())));
   app.use('/device', auth('DEVICE_TOKEN'));
+  app.get('/device/test-cover.png', async (_req, res) => {
+    const png = await store.read('checks/cover.png');
+    if (!png) return res.sendStatus(404);
+    res.type('image/png').send(png);
+  });
   app.get('/device/manifest', async (_req, res) => {
     const edition = await latest(store);
     if (!edition) return res.status(503).json({ error: 'No published edition' });
