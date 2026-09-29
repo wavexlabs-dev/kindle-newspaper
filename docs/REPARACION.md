@@ -1,6 +1,6 @@
 # Reparación offline de KMC
 
-**Estado: instalación aplicada; verificación funcional pendiente.** El intento trazable ejecutó como root y la cola oficial terminó con `installer_exit_code=0` después de verificar los 38 archivos y aplicar los parches. El wrapper falló al volver a montar `/` en sólo lectura (`mount: / is busy`) y se detuvo antes de ejecutar el checker. FBInk USB ya coincide con el oficial. Está copiada y verificada una comprobación independiente para el siguiente reinicio; su resultado aún no se ha recibido.
+**Estado: jailbreak funcional verificado y primera portada observada.** Los informes 003 y 005 confirman root tras reiniciar y todos los controles del sistema, incluida inicialización FBInk a 600 × 800. `preview-5.txt` registra render con código cero y el usuario confirmó «La Señal». Los informes no alcanzan sus marcadores finales: cierre normal y retorno de pantalla no verificados.
 
 ## Diagnóstico confirmado
 
@@ -59,7 +59,11 @@ La verificación originalmente prevista en [kindle_postboot_repair.sh](../script
 
 Se copió como `newspaper-diagnostics/verify-after-restart-003.sh`: 1,829 bytes, SHA-256 `3887759199a74e169cef22369fcc01bc6e2bce07143ebd51f9de5d9fd01766a9`. La entrada [kindle_boot_verify_entry.sh](../scripts/kindle_boot_verify_entry.sh) se copió como `emergency.sh`: 153 bytes, SHA-256 `0d9fe0d58a7c78e573b651392fcf0e2a266d380df93f982d22fbbd63f4618015`. Ambas copias se verificaron. La entrada llama únicamente al verificador mediante el hook oficial; la guarda permite una sola ejecución.
 
-**Séptima expulsión segura confirmada.** Se indicó desconectar USB, activar Modo avión, reiniciar normalmente desde el menú, esperar a Inicio más un minuto y reconectar USB. No se vuelve a WB2. El resultado `verify-after-restart-003` está pendiente.
+Tras la séptima expulsión y el reinicio normal, el informe confirmó UID 0, `verification_boot_time=1790644442` frente a `installation_boot_time=1790643805` y `different_boot=1`. Pasaron los 38 hashes, KPM CLI 1.0.0/libkpm 0.2.2 para `kindlepw2`, Gandalf/SUID, directorios y enlaces, hook, dispatcher, banderas, SH_Integration, extractor, clave, OTA renombrado/detenido y `root_readonly=1`.
+
+Sólo falló el control que usaba `fbink -e`. Se conserva ese resultado parcial sin alterar el fallo original de remount ni crear un éxito global. El diagnóstico 004 y la revisión posterior identificaron el defecto de `state_dump`, documentado en [VERIFICACION.md](VERIFICACION.md). Se retiró el `emergency.sh` propio después de verificar su hash y leer el informe. El relleno temporal se retiró tras confirmar OTA; no se modificó contenido personal.
+
+La [prueba 005](VERIFICACION.md#verificación-y-portada-005--sistema-y-dibujo-confirmados) pasó todos los controles con el chequeo `-v`/EOF y dibujó la portada, confirmada por el usuario. No se cambió FBInk ni el paquete original. Después se dejó una entrada reutilizable en Biblioteca hacia el motor probado; sólo esa nueva entrada tiene verificación de sintaxis y copia, sin otra prueba física. Undécima expulsión confirmada. Wi-Fi, despertar y cloud siguen pendientes.
 
 ## Evidencia requerida
 
@@ -69,13 +73,13 @@ Se copió como `newspaper-diagnostics/verify-after-restart-003.sh`: 1,829 bytes,
 | Copia al Kindle | Verificación de todos los archivos transferidos; todavía no implica ejecución. |
 | Entrada trazable | `repair-launch-002.txt` con contexto de ejecución y resultado del wrapper; por sí solo no confirma instalación. |
 | Reparación aplicada | `repair-001.txt` conserva `installer_exit_code=0` y `repair_exit_code=1` por remount ocupado; no se reescribe como éxito. |
-| Funcionalidad y persistencia | Reinicio real y `verify-after-restart-003.txt` con `different_boot=1`, `failed_checks=0`, `verified_after_restart=1` y `restart_verification_rc=0`. |
-| Pantalla | Prueba independiente de dibujo y lectura de una portada en el dispositivo. |
+| Funcionalidad y persistencia | 003 confirmó root en un arranque distinto; 005 pasó todos los controles corregidos (`failed_checks=0`, `system_check_rc=0`). No se reescribe 003 como éxito global. |
+| Pantalla | `preview-5.txt` registra `render_rc=0` y el usuario confirmó «La Señal»; cierre final y restauración no constan. |
 
 Ni un archivo `.success` ni un mensaje en pantalla sustituyen la lectura del informe. Una falta de informe, un control fallido o un código no cero mantiene el resultado pendiente de revisión.
 
 ## Validación realizada en el Mac
 
-Las cinco pruebas de [test_repair_checks.py](../tests/test_repair_checks.py) pasan con archivos y comandos simulados: instalación consistente, payload modificado, proceso OTA activo, KPM con código no cero pese a texto válido y KPM sin versiones esperadas pese a código cero. La condición SUID se simula porque el sandbox de macOS elimina ese bit.
+Las seis pruebas de [test_repair_checks.py](../tests/test_repair_checks.py) pasan con archivos y comandos simulados: instalación consistente, payload modificado, fallo de FBInk, proceso OTA activo y dos respuestas KPM inválidas. La simulación rechaza `-e`; la condición SUID se simula porque el sandbox de macOS elimina ese bit.
 
-Estas pruebas validan la lógica de detección del verificador. **No ejecutan los binarios ARM, no instalan KMC y no prueban su persistencia en el Kindle.** No se ha conectado Gmail o Calendar ni desplegado el periódico cloud como parte de esta reparación. Se mantiene la instrucción del usuario de no respaldar contenido.
+Estas pruebas de host validan la lógica del verificador y no ejecutan binarios ARM. La prueba física posterior 003 sí aportó los resultados parciales descritos arriba. No se ha conectado Gmail o Calendar ni desplegado el periódico cloud como parte de esta reparación. Se mantiene la instrucción del usuario de no respaldar contenido.

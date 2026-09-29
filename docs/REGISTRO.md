@@ -50,6 +50,50 @@ Fecha: 28 de septiembre de 2026. Zona del usuario: America/Mexico_City.
 36. Preparados `scripts/kindle_verify_after_restart.sh` y `scripts/kindle_boot_verify_entry.sh` para una comprobación independiente mediante el hook de arranque oficial. Exige el log de instalador con código cero y error de remount, integridad del paquete y `boot_time` diferente. Ejecuta el checker existente sin reinstalar, forzar montajes ni crear un `repair-001.success` artificial. `kpm version` puede inicializar su propia base de datos. Preparación de copia en curso; el siguiente paso previsto es Modo avión, reinicio normal completo, esperar un minuto y reconectar USB, sin WB2.
 37. Copiados y verificados `newspaper-diagnostics/verify-after-restart-003.sh` (1,829 bytes, SHA-256 `3887759199a74e169cef22369fcc01bc6e2bce07143ebd51f9de5d9fd01766a9`) y `emergency.sh` (153 bytes, SHA-256 `0d9fe0d58a7c78e573b651392fcf0e2a266d380df93f982d22fbbd63f4618015`). No se modificó el paquete de reparación ni se creó un marcador artificial de éxito.
 38. Séptima expulsión segura confirmada. Se indicó desconectar, activar Modo avión, reiniciar normalmente desde el menú, esperar a Inicio más un minuto y reconectar USB. No se utiliza WB2 en este paso. Prueba `verify-after-restart-003` pendiente.
+39. Resultado `verify-after-restart-003`: UID 0 al arrancar, `verification_boot_time=1790644442` frente a `installation_boot_time=1790643805` y `different_boot=1`. Los 38 hashes coinciden. KPM funciona: CLI 1.0.0, libkpm 0.2.2, plataforma `kindlepw2`. Pasan Gandalf/SUID, directorios y enlaces, hook, dispatcher, banderas, SH_Integration (registros SQL 2/1), extractor y clave. Ambos componentes OTA están renombrados y detenidos; `root_readonly=1`.
+40. Único fallo: `fbink_initializes=0`; `failed_checks=1`, `restart_verification_rc=1` y sin marcador de éxito. El checker descartaba stderr de FBInk, así que este informe no establece la causa. La revisión del binario identifica FBInk 1.25.0 con KT2/C6 explícitamente soportado; no prueba una incompatibilidad de dependencias. Quedan confirmados root tras reiniciar, KPM y OTA; no FBInk ni el dibujo del periódico.
+41. Copiado `scripts/kindle_probe_display.sh` como `documents/Pantalla_Kindle.sh`: 2,657 bytes, SHA-256 `36358d8a5786efb8a754073a51d397fabf4d5f389e2741cc0dec06653054023c`, metadatos `Name: Diagnostico pantalla`, `Author: Kindle Newspaper` y `DontUseFBInk`. Recoge datos técnicos de CPU/kernel, framebuffer, loader y errores/códigos de FBInk con y sin ruta de bibliotecas; limita stdout a dimensiones y no recoge seriales. No instala, cambia servicios ni monta sistemas de archivos.
+42. Tras verificar el hash del `RUNME.sh` propio anterior, se sustituyó por `scripts/kindle_run_display_probe.sh`: 125 bytes, SHA-256 `9fb2ee51e87262d94c181f2c8d21de986ad8b7954ff45233b200b8e6dcd70567`. Ambos archivos se comprobaron con `sh -n` y se releyeron por USB con hashes coincidentes.
+43. Retirado el `emergency.sh` propio del diagnóstico 003 después de leer su informe y verificar su hash. Tras confirmar OTA se retiraron 956,301,312 bytes de relleno del proyecto. La eliminación automática de un AppleDouble provocó un `FileNotFound` en el primer pase; se continuó únicamente con nombres y tamaños ya comprobados y se confirmó la ausencia de `.newspaper-ota-guard`. No se alteró contenido del usuario.
+44. Octava expulsión segura confirmada. Se indicó usar Inicio → lupa → `;log runme` → Enter, esperar 15 segundos y reconectar USB; si aparece una búsqueda normal, abrir `Diagnostico pantalla` desde Biblioteca. Sin reinicio ni WB2. Resultado `display-004` pendiente. El script de vista previa con `DontUseFBInk` está preparado localmente, sin copiar al Kindle.
+45. Llegó `display-004`: UID 0, kernel `3.0.35-lab126`, ARMv7/NEON Wario y framebuffer `mxc_epdc` presente. El loader y `fbink --help` devuelven cero; `fbink -e` falla con segmentación y código 139 tanto con `LD_LIBRARY_PATH` como sin esa variable. Esto localiza el fallo en la ruta probada; no demuestra que FBInk no pueda inicializar o dibujar.
+46. La revisión del código y del ELF exacto identificó un defecto en `state_dump` de FBInk 1.25.0: 57 conversiones de formato y 56 argumentos en la rama Kindle por un booleano omitido en `isTolino`/`isSunxi`. El `%s` de `pixelFormat` recibe un booleano como puntero (`1`). Referencia fijada: [fbink.c](https://github.com/NiLuJe/FBInk/blob/83110d3d278cf9cd44cc1d16237e284a89f72633/fbink.c#L5908).
+47. Corregido nuestro checker: sustituye `-e` por `fbink -v </dev/null`, que pasa por apertura, inicialización, EOF y cierre sin dibujar; ahora conserva stderr. No se cambió el binario FBInk, el sistema ni el paquete original de 49 archivos. Las pruebas host pasan 6/6, incluida detección de fallo de FBInk; la simulación rechaza el uso de `-e`.
+48. Copiados y releídos los controles separados de la prueba 005, el PNG y la vista previa con `DontUseFBInk`. El checker va fuera del paquete original como `newspaper-diagnostics/check-installed-005.sh`. La vista previa usa `-v`/EOF para comprobar 600 × 800, intenta dibujar el PNG durante 15 segundos y restaura la GUI desde el trap, conservando los errores de render. Los hashes de las seis copias constan en la tabla siguiente; no hay resultado 005 todavía.
+49. Novena expulsión segura confirmada. Se indicó `;log runme`, observar «La Señal» durante 15 segundos, esperar 30 segundos y reconectar USB. No se afirma aún que FBInk inicialice correctamente ni que la portada se haya visto.
+50. El usuario abrió `Portada_de_prueba` directamente desde Biblioteca. El informe `newspaper-test/preview-1.txt`, UTC `2026-09-29T01:34:54Z`, confirma `uid=0`, `firmware_match=1`, `error=xrefresh_missing_or_not_executable`, `preview_complete=0` y código 1. No existe informe `display-005`: el flujo completo no quedó demostrado. Sí se confirmó lanzamiento root por SH_Integration desde Biblioteca. La vista previa se detuvo en nuestro preflight, antes de inicializar FBInk o dibujar.
+51. Se está corrigiendo el script para eliminar la dependencia innecesaria de `xrefresh`, conservar la GUI original activa y permitir recuperación manual mediante USB o suspensión/despertar. La promesa previa de restauración automática queda retirada. La copia de esta revisión, sus hashes y una nueva expulsión todavía no se dan por realizadas.
+52. Revisión ampliada: `preview-1.txt` a `preview-4.txt` muestran el mismo fallo `xrefresh_missing_or_not_executable` con UID 0; `display-005.txt` sigue ausente. El script local ya elimina `xrefresh`. Se preparó una entrada común con metadatos de Biblioteca (`Name: Portada de prueba`, `Author: Kindle Newspaper`, `DontUseFBInk`) para `RUNME.sh` y `documents/Portada_de_prueba.sh`; ambas llamarán al controlador 005. Éste ejecutará el checker y luego el motor `newspaper-test/preview.sh`. Copia y nueva expulsión todavía pendientes.
+53. La nueva vista previa conserva la GUI original activa y un periodo de observación de 15 segundos. La imagen puede permanecer después hasta un redibujado nativo. La recuperación mediante USB o suspensión/despertar es manual y aún no está probada; no se declara restauración automática.
+54. Copiada y releída la revisión sin `xrefresh`; hashes en la tabla de revisión siguiente. Antes de copiar no había informe ni lock `display-005`. El checker 005 y el PNG no cambiaron. Pasaron `sh -n` para los tres scripts modificados y las seis pruebas host en 9.055 segundos. La revisión del [launcher oficial](https://github.com/KindleModding/sh_integration/blob/adb7ef5c570a25c76fd64e94837ae0f590bd3b9c/launcher/main.c#L180) confirma que detiene su propia aplicación antes de intentar un `xrefresh` opcional cuyo resultado ignora; no se modificó el launcher ni el sistema.
+55. Décima expulsión segura confirmada por `diskutil`. Se indicó abrir **Portada de prueba** desde Biblioteca, esperar 30 segundos y reconectar USB. Resultado de checker, inicialización, render y observación de portada todavía pendientes.
+56. El usuario confirmó visualmente que vio «La Señal» y reconectó USB. El informe nuevo `display-005.txt` registra todos los controles correctos: 38 hashes, Gandalf/SUID, permisos, enlaces, dispatcher, hook, SH_Integration, KPM, OTA renombrado/detenido y raíz en sólo lectura. FBInk con `-v` informa Basic/C6, 600 × 800, 8 bpp/Y8; `fbink_initializes=1`, `failed_checks=0`, `system_check_rc=0`, `system_verification_passed=1` y `display-005.system-success` presente. El informe se corta después de ese punto, sin código final del controlador.
+57. `preview-5.txt`, UTC `2026-09-29T01:43:05Z`, confirma UID 0, hash de imagen correcto, inicialización código cero, 600 × 800, GUI activa y `render_rc=0`. Registra `observation_seconds=15`, `gui_restore=usb_or_sleepwake` y `gui_restored=unverified`, pero termina sin `preview_complete` ni código final. Render correcto y observación del usuario acreditan la primera portada física. No se acredita espera completa, cierre normal ni restauración; la causa del corte del informe no está establecida. Los resultados 003 y 005 juntos verifican el jailbreak funcional tras reiniciar.
+58. Después de comprobar el éxito del sistema 005 y el render, se sustituyó únicamente la entrada de Biblioteca por `scripts/kindle_show_cover.sh`, copiada como `documents/Portada_de_prueba.sh`: 201 bytes, SHA-256 `346f9cfe77fab2e7e699f8d9dae750fb5b2a0990ee6afd43fcf22b2546c1fd62`. Se verificó el hash anterior, la sintaxis y la copia releída. Conserva nombre, autor y `DontUseFBInk`; llama directamente al motor `newspaper-test/preview.sh` de 6,290 bytes, sin cambios desde el render confirmado. Es un acceso reutilizable que evita la guarda 005; la nueva entrada no recibió otra prueba física. `RUNME.sh` conserva el wrapper 005 de 211 bytes y no debe usarse para repetir la demo.
+59. Undécima expulsión segura confirmada por `diskutil`. No se solicitó una nueva prueba física. Se cierra la fase de jailbreak verificado y primera portada observada; entrega Wi-Fi, despertar autónomo, contenido real y cloud siguen pendientes. Cierre normal de preview y retorno de pantalla no comprobados.
+
+### Revisión de la prueba 005 sin xrefresh
+
+Copias verificadas para la ejecución 005; el checker y PNG conservan los hashes de la tabla inicial. Después del resultado, sólo la entrada de Biblioteca se sustituyó por el acceso reutilizable de 201 bytes descrito en el punto 58; `RUNME.sh` conserva su hash de esta tabla.
+
+| Archivo | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `RUNME.sh` y `documents/Portada_de_prueba.sh` | 211 cada uno | `f3f4ffa61411d61175c24be7a0b9bc55735f979de6a57007117e63b6a925f8f4` |
+| `newspaper-diagnostics/display-005.sh` | 1,314 | `2e2c7c68bf7ca43850d73fd53c500d1559680672922b1049ea10fe595208a0a0` |
+| `newspaper-test/preview.sh` | 6,290 | `49fa69254e6b3326c1d6bc0925e79ffd9258cc3537a8903d2e6770afbe8cf76b` |
+
+### Archivos iniciales de la prueba 005 — historial
+
+Rutas relativas a la raíz USB del Kindle. Los hashes son SHA-256. Las entradas de `RUNME.sh`, `display-005.sh` y `Portada_de_prueba.sh` se sustituyeron por la revisión sin `xrefresh` documentada arriba.
+
+| Archivo | Bytes | Hash |
+| --- | ---: | --- |
+| `newspaper-test/OWNER.txt` | 34 | `4a445bf38190cf753274cac4721a325d4761beab806920f231f26acbb626a845` |
+| `newspaper-test/cover-test.png` | 50,863 | `674ef64967bc45b710e88b169814c243d08a87f58314b7dea5466f2172b1f937` |
+| `newspaper-diagnostics/check-installed-005.sh` | 4,616 | `476e6db993f25779ae92f7ff8851740c1de4f4b93f6f72b9205763d8571d83f0` |
+| `newspaper-diagnostics/display-005.sh` | 1,319 | `f732900336f26f14d422ab9de7e931bc620c96e0890028e01fa613c814e74a0b` |
+| `documents/Portada_de_prueba.sh` | 6,518 | `f92b865cd602bca511426b8f23f9be506e86779099a3b6851f30bc06774aff98` |
+| `RUNME.sh` | 147 | `7e4d4a4c5ce6d2fd41b31bcf152248454d1c10da342d73e182f89c571a7165f8` |
 
 ## Relleno temporal y decisión OTA
 
@@ -57,28 +101,30 @@ Se inició `.newspaper-ota-guard` con el objetivo de dejar aproximadamente 80 Mi
 
 La escritura inicial de ceros resultó lenta. Se interrumpió de forma controlada con SIGINT después de tres bloques de 128 MiB, conservando el relleno ya creado. Se reanudó mediante `truncate` y verificación de asignación real: una prueba de 16 MiB confirmó 16 MiB asignados en 4.714 segundos. La escritura por bloques grandes siguió siendo lenta. Se detuvo el segundo proceso con SIGINT y se esperó su salida antes de continuar.
 
-Comprobación al terminar: 8 archivos de relleno, 956,301,312 bytes de contenido temporal; 1,919,115,264 bytes libres. No hay archivos `update*` en la raíz y el checksum del HTML vuelve a coincidir. **Este relleno parcial no bloquea las actualizaciones.** Permanece hasta verificar el bloqueo OTA del jailbreak y retirarlo.
+Comprobación al terminar la preparación inicial: 8 archivos de relleno, 956,301,312 bytes de contenido temporal; 1,919,115,264 bytes libres. No había archivos `update*` en la raíz y el checksum del HTML coincidía. **Ese relleno parcial no bloqueaba las actualizaciones.** Se retiró después de confirmar ambos componentes OTA renombrados y detenidos en el diagnóstico 003; la carpeta ya no existe.
 
 ## Estado actual
 
 - Diagnóstico: lectura USB y ejecución root por navegador confirmadas.
 - Paquete WinterBreak2: descargado y verificado.
 - Copia al Kindle: realizada y checksum verificado.
-- Expulsión segura: séptima expulsión confirmada; entregadas instrucciones de Modo avión y reinicio normal para verificación, sin WB2.
-- Relleno temporal: detenido y parcial; decisión de no completarlo documentada.
+- Expulsión segura: undécima expulsión confirmada tras dejar la entrada reutilizable de Biblioteca.
+- Relleno temporal: retirado después de confirmar OTA; ausencia de la carpeta comprobada.
 - Ejecución del payload: observada en las fotos y corroborada por el marcador USB.
-- Instalación KMC: aplicada por la reparación, con 38 hashes correctos y `installer_exit_code=0`; verificación funcional aún no ejecutada.
-- Bloqueo OTA: renombrado aplicado según el log; estado de procesos y persistencia pendientes de comprobar tras reiniciar.
+- Instalación KMC: jailbreak funcional verificado mediante 003 y 005; 38 hashes correctos, root tras reiniciar, KPM, Gandalf/SUID y parches comprobados.
+- Bloqueo OTA: ambos componentes renombrados y detenidos, comprobados después de reiniciar.
 - Verificación post-jailbreak: Biblioteca y búsqueda no produjeron informes; el probe directo sí confirmó root y expuso la instalación incompleta.
 - Reparación offline: ejecutada; el wrapper salió con código 1 por `root_remount_failed` antes del checker. Paquete íntegro y FBInk USB coincide con el oficial.
-- Raíz en sólo lectura: no confirmada; el remount devolvió EBUSY. Causa específica desconocida, sin montaje forzado ni reinstalación.
-- Verificación tras reiniciar: `verify-after-restart-003` y entrada de arranque copiados y verificados; resultado independiente pendiente.
+- Raíz en sólo lectura: `root_readonly=1` confirmado después del reinicio. La causa del EBUSY anterior sigue desconocida; no se forzó montaje ni reinstalación.
+- Verificación tras reiniciar: 003 confirmó persistencia y 005 pasó todos los controles con el chequeo FBInk corregido; `system-success` presente. El controlador no registra su cierre final.
+- Diagnóstico de pantalla: 004 identificó el defecto de `-e`; 005 inicializa con `-v`, confirma 600 × 800 y dibuja correctamente.
 - Causa del fallo de extracción inicial: no establecida.
 - Repositorio GitHub: privado, creado y primera subida a `main` verificada.
 - Backups: ninguno, por instrucción del usuario.
 - Reset y extracción de contenido personal: no realizados.
-- Portada sintética: PNG 600 × 800 en escala de grises generado e inspeccionado visualmente en el Mac. Prueba en la pantalla física pendiente.
-- Scripts de verificación: el probe directo ejecutó y produjo evidencia; la verificación integral de la reparación sigue pendiente.
-- Disparador local WB2: `repair-launch-002.sh` ejecutó como root. El siguiente paso utiliza el hook de arranque; no requiere volver a WB2.
+- Portada sintética: preview 5 registra `render_rc=0` y el usuario confirma verla; cierre normal y retorno de pantalla no comprobados.
+- Scripts de verificación: 6/6 pruebas host y todos los controles ARM de 005 correctos; se conservan los informes sin inventar sus marcadores finales ausentes.
+- Disparadores: Biblioteca usa ahora la entrada reutilizable al motor probado; sintaxis y copia verificadas, sin nueva prueba física de la entrada. `RUNME.sh` conserva 005 y su guarda de una sola ejecución.
+- Próxima fase: Wi-Fi, despertar autónomo y cloud pendientes; no se confunden con la portada local ya observada.
 
 Se actualizará este registro con resultados observados, separando archivos preparados, ejecución y funcionamiento verificado.

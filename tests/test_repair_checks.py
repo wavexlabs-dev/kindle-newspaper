@@ -31,7 +31,12 @@ class RepairCheckTests(unittest.TestCase):
 
         self.put = put
         binary = "var/local/kmc/kindlepw2/bin/"
-        self.put(binary + "fbink", '#!/bin/sh\n[ "$1" = -e ]\n', 0o755)
+        self.put(binary + "fbink", '''#!/bin/sh
+# The broken state dump must never be used by the repaired checker.
+[ "$1" = -v ] || exit 139
+if IFS= read -r unexpected_input; then exit 23; fi
+exit "${FBINK_TEST_RC:-0}"
+''', 0o755)
         self.put(binary + "kpm", """#!/bin/sh
 [ "$1" = version ] || exit 20
 if [ "${KPM_TEST_BAD_OUTPUT:-0}" = 1 ]; then
@@ -134,6 +139,9 @@ esac
     def test_modified_payload_fails(self):
         (self.kmc / "payload-version.txt").write_text("tampered\n")
         self.assert_failed(self.run_checker(), "installed_payload_matches")
+
+    def test_fbink_initialization_error_fails(self):
+        self.assert_failed(self.run_checker(FBINK_TEST_RC="1"), "fbink_initializes")
 
     def test_running_ota_process_fails(self):
         self.assert_failed(self.run_checker(OTA_TEST_ACTIVE="otaupd"), "otaupd_stopped")

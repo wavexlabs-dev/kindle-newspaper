@@ -1,13 +1,15 @@
 #!/bin/sh
 # Name: Portada de prueba
 # Author: Kindle Newspaper
+# DontUseFBInk
 
 # Foreground SH_Integration preview; never run this script on the Mac.
 # Stage OWNER.txt containing exactly: Kindle Newspaper cover preview v1
 # alongside the verified cover-test.png in /mnt/us/newspaper-test.
 # A render return code of zero confirms the FBInk call completed, not that
 # the physical image was legible or remained free of GUI redraws. A person
-# must confirm the cover and the subsequent return to the Kindle interface.
+# must confirm the cover. The stock GUI stays alive; reconnect USB or briefly
+# sleep/wake the device to ask it to redraw. No automatic GUI restore is promised.
 # No services are stopped and no network, installer or background job is used.
 
 umask 077
@@ -15,7 +17,6 @@ BB=/bin/busybox
 BASE=/mnt/us/newspaper-test
 IMAGE=/mnt/us/newspaper-test/cover-test.png
 FBINK=/var/local/kmc/bin/fbink
-XREFRESH=/usr/bin/xrefresh
 LOCK=/tmp/kindle-newspaper-cover-preview.lock
 EXPECTED_IMAGE=674ef64967bc45b710e88b169814c243d08a87f58314b7dea5466f2172b1f937
 
@@ -50,7 +51,6 @@ printf 'utc='
 "$BB" date -u '+%Y-%m-%dT%H:%M:%SZ'
 
 lock_owned=0
-restore_needed=0
 preview_finished=0
 
 fail() {
@@ -61,14 +61,6 @@ fail() {
 cleanup() {
     result=$?
     trap - 0 HUP INT TERM
-    if [ "$restore_needed" -eq 1 ]; then
-        "$XREFRESH" -d :0.0 >/dev/null 2>&1
-        refresh_rc=$?
-        printf 'gui_refresh_rc=%s\n' "$refresh_rc"
-        if [ "$refresh_rc" -ne 0 ] && [ "$result" -eq 0 ]; then
-            result=1
-        fi
-    fi
     if [ "$lock_owned" -eq 1 ]; then
         owner=$("$BB" cat "$LOCK/pid" 2>/dev/null)
         if [ "$owner" = "$$" ] && [ ! -L "$LOCK" ] && [ ! -L "$LOCK/pid" ]; then
@@ -102,7 +94,6 @@ firmware=$("$BB" awk 'NR == 1 { print $1 " " $2; exit }' /mnt/us/system/version.
 [ "$firmware" = 'Kindle 5.12.2.2' ] || fail 'firmware_mismatch'
 printf '%s\n' 'firmware_match=1'
 [ -x "$FBINK" ] || fail 'fbink_missing_or_not_executable'
-[ -x "$XREFRESH" ] || fail 'xrefresh_missing_or_not_executable'
 [ -f "$IMAGE" ] && [ ! -L "$IMAGE" ] || fail 'cover_png_missing_or_symlink'
 hash_output=$("$BB" sha256sum "$IMAGE" 2>/dev/null)
 [ "$?" -eq 0 ] || fail 'cover_checksum_command_failed'
@@ -130,29 +121,33 @@ fi
 lock_owned=1
 (set -C; printf '%s\n' "$$" > "$LOCK/pid") || fail 'cannot_record_preview_lock_owner'
 
-# Read only two numeric fields from FBInk's state. Never eval its output or
-# write the full state (which includes unnecessary device metadata) to USB.
-state=$(LD_LIBRARY_PATH=/var/local/kmc/lib "$FBINK" -e 2>/dev/null)
-state_rc=$?
-printf 'fbink_initialization_rc=%s\n' "$state_rc"
-[ "$state_rc" -eq 0 ] || fail 'fbink_initialization_failed'
-screen_width=$(printf '%s\n' "$state" | "$BB" tr ';' '\n' |
-    "$BB" sed -n 's/^screenWidth=\([0-9][0-9]*\)$/\1/p')
-screen_height=$(printf '%s\n' "$state" | "$BB" tr ';' '\n' |
-    "$BB" sed -n 's/^screenHeight=\([0-9][0-9]*\)$/\1/p')
-unset state
+# The bundled Kindle build has a faulty -e state-dump format. Its verbose
+# path initializes FBInk, then reaches stdin EOF without drawing anything.
+# Discard help on stdout and retain stderr only long enough to extract the
+# pinned "Variable fb info" dimensions; never eval or log device metadata.
+init_output=$(LD_LIBRARY_PATH=/var/local/kmc/lib "$FBINK" -v </dev/null 2>&1 >/dev/null)
+init_rc=$?
+printf 'fbink_initialization_rc=%s\n' "$init_rc"
+[ "$init_rc" -eq 0 ] || fail 'fbink_initialization_failed'
+dimensions=$(printf '%s\n' "$init_output" |
+    "$BB" sed -n 's/^\[FBInk\] Variable fb info: \([0-9][0-9]*\)x\([0-9][0-9]*\), [0-9][0-9]*bpp @ rotation: [0-9][0-9]* (.*)$/\1 \2/p')
+unset init_output
+# Require exactly one matching line; duplicate or unexpected output fails.
+[ "$dimensions" = '600 800' ] || fail 'expected_600x800_portrait_screen'
+screen_width=${dimensions% *}
+screen_height=${dimensions#* }
+unset dimensions
 [ "$screen_width" = 600 ] && [ "$screen_height" = 800 ] || fail 'expected_600x800_portrait_screen'
 printf '%s\n' 'screen_width=600' 'screen_height=800' 'gui_left_running=1'
 
 "$BB" sleep 1 || fail 'initial_delay_interrupted'
-# Restore even if drawing fails after partially changing the framebuffer.
-restore_needed=1
-LD_LIBRARY_PATH=/var/local/kmc/lib "$FBINK" -c -f -w -V -W GC16 -i "$IMAGE" >/dev/null 2>&1
+# Drawing is transient. Keep the native GUI alive for USB/sleep-wake recovery.
+LD_LIBRARY_PATH=/var/local/kmc/lib "$FBINK" -c -f -w -V -W GC16 -i "$IMAGE" >/dev/null
 render_rc=$?
 printf 'render_rc=%s\n' "$render_rc"
 [ "$render_rc" -eq 0 ] || fail 'fbink_render_failed'
-printf '%s\n' 'preview_duration_seconds=15'
+printf '%s\n' 'observation_seconds=15' 'gui_restore=usb_or_sleep_wake' 'gui_restored=unverified'
 "$BB" sleep 15 || fail 'preview_delay_interrupted'
 preview_finished=1
-# EXIT cleanup refreshes the active GUI and releases the lock.
+# EXIT cleanup releases the lock; the cover may remain until a native redraw.
 exit 0

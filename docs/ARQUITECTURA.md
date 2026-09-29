@@ -65,7 +65,7 @@ La portada será la pantalla principal, con fecha, titulares principales y próx
 
 Las interacciones previstas son avanzar, retroceder y volver a portada. Debe existir una salida de mantenimiento para recuperar el control del dispositivo. La sustitución del salvapantallas, la convivencia con el sistema original y el comportamiento al reiniciar se comprobarán por separado.
 
-El primer prototipo priorizará imágenes paginadas para que portada y lectura compartan el mismo diseño. FBInk y KOReader son candidatos técnicos, sujetos a verificación en esta unidad. No están instalados por el hecho de aparecer en esta arquitectura.
+El primer prototipo priorizará imágenes paginadas para que portada y lectura compartan el mismo diseño. FBInk ya inicializa y muestra una portada sintética en esta unidad, confirmada por el usuario. La navegación paginada, la descarga y el despertar siguen pendientes; KOReader continúa como candidato para lectura, sin instalación verificada.
 
 ## Seguridad y privacidad
 

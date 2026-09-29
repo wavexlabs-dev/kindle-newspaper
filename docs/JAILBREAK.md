@@ -4,9 +4,9 @@ Dispositivo del proyecto: Kindle Basic 2014 / 7.ª generación / KT2, prefijo de
 
 ## Estado
 
-**Instalación aplicada; verificación funcional pendiente.** El primer instalador dejó un marcador, pero el diagnóstico confirmó KMC incompleto. La reparación posterior ejecutó como root, verificó los 38 hashes y aplicó la cola oficial con `installer_exit_code=0`. El wrapper se detuvo después con `root_remount_failed` y `mount: / is busy`, antes de ejecutar sus comprobaciones funcionales.
+**Jailbreak funcional verificado y primera portada vista.** La reparación y los informes 003/005 confirmaron los 38 hashes, root tras reiniciar, KPM, Gandalf/SUID, integración, OTA renombrado/detenido y raíz en sólo lectura. El chequeo FBInk corregido pasó y el usuario confirmó «La Señal», con render de código cero.
 
-FBInk USB ya coincide con el archivo oficial. Se copió y verificó una comprobación independiente mediante el hook de arranque para verificar componentes, OTA y raíz en sólo lectura tras un reinicio normal. La séptima expulsión está confirmada y el resultado está pendiente. No requiere repetir WB2, reinstalar ni forzar el montaje. Los resultados y hashes están en [REGISTRO.md](REGISTRO.md) y el procedimiento en [REPARACION.md](REPARACION.md).
+Se corrigieron nuestros controles (`-v`/EOF y sin exigir `xrefresh`) sin cambiar el binario. Los informes no acreditan cierre normal ni retorno automático de pantalla. Biblioteca quedó con una entrada reutilizable al motor probado; la nueva entrada se verificó por sintaxis y copia, sin otra prueba física. Undécima expulsión confirmada. Wi-Fi, despertar autónomo y cloud siguen pendientes. Detalles en [VERIFICACION.md](VERIFICACION.md).
 
 El `dialoger.html` original fue sustituido por una adaptación diagnóstica que ejecutó un probe local. Los hashes de release de esta página identifican el original descargado; no deben usarse para identificar adaptaciones posteriores. La sección del paso físico conserva el procedimiento inicial, ya realizado; no es una indicación de repetir el instalador remoto.
 
@@ -56,7 +56,7 @@ El hash anterior es una observación local de ese momento; no es una firma publi
 
 **Decisión para esta unidad:** se inició el relleno, pero se omitió completarlo tras volver a verificar que [Amazon ofrece 5.12.2.2 para Kindle de 7.ª generación](https://digprjsurvey.amazon.com/csad/help/node/GKMQC26VQQMM8XSW?theme=light), exactamente la versión instalada y compatible con WinterBreak2. El relleno previene descargas OTA; no es una dependencia de ejecución del exploit. Esta decisión es una inferencia técnica basada en el catálogo actual, no una excepción expresamente publicada por KindleModding ni una garantía de que nunca haya otra actualización. No se encontraron archivos de actualización pendientes en la raíz durante la preparación.
 
-El relleno parcial permanece en `.newspaper-ota-guard/` y **no constituye un bloqueo OTA efectivo**. Se retirará después de comprobar el bloqueo real instalado por el jailbreak. El script local permite inspección sin cambios (`python3 scripts/prepare_kindle.py`), preparación (`--apply`) y relleno opcional (`--apply --fill`). Comprueba ocupación real, no sólo tamaño aparente de los archivos.
+El relleno parcial **no constituía un bloqueo OTA efectivo**. Se retiró después de comprobar ambos componentes OTA renombrados y detenidos tras reiniciar; la ausencia de `.newspaper-ota-guard/` quedó confirmada. El script local de preparación comprueba ocupación real, no sólo tamaño aparente; no es necesario volver a crear el relleno para la prueba de pantalla.
 
 ## Paso físico en el Kindle
 
@@ -71,7 +71,7 @@ El acceso USB disponible permite copiar archivos; no controla la pantalla del Ki
 
 ## Verificación posterior
 
-El diagnóstico directo identificó la instalación incompleta y la reparación posterior ya aplicó los archivos y parches. La siguiente fase es la comprobación independiente tras reiniciar descrita en [REPARACION.md](REPARACION.md). No están establecidas la causa exacta del fallo de extracción inicial ni la del remount ocupado posterior.
+La comprobación tras reiniciar y la prueba corregida 005 verificaron el sistema y el primer dibujo, confirmado por el usuario. No están establecidas la causa exacta del fallo de extracción inicial ni la del remount ocupado anterior. Tampoco se atribuye una causa al corte de los informes antes de su cierre final.
 
 Comprobar `documents/JAILBROKEN.txt` si lo genera el instalador, la versión anotada y cualquier salida de instalación. El marcador por sí solo no basta: verificar que, tras reiniciar, funciona una aplicación o scriptlet compatible y el gestor de paquetes. Inspeccionar el bloqueo OTA antes de retirar el relleno creado por este proyecto. El procedimiento concreto se documenta en [VERIFICACION.md](VERIFICACION.md).
 

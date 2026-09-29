@@ -32,7 +32,9 @@ if [ "$(readlink /var/local/kmc/bin)" = /var/local/kmc/kindlepw2/bin ]; then
 else
     fail platform_link
 fi
-if LD_LIBRARY_PATH=/var/local/kmc/lib /var/local/kmc/bin/fbink -e >/dev/null 2>&1; then
+# This pinned FBInk's -e state_dump has a Kindle printf argument mismatch.
+# Verbose initialization with EOF reaches open/init/close without drawing.
+if LD_LIBRARY_PATH=/var/local/kmc/lib /var/local/kmc/bin/fbink -v </dev/null >/dev/null; then
     pass fbink_initializes
 else
     fail fbink_initializes
