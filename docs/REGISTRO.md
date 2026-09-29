@@ -26,6 +26,10 @@ Fecha: 28 de septiembre de 2026. Zona del usuario: America/Mexico_City.
 12. El usuario transcribió el texto del comprobante `JAILBROKEN.txt`. Se aclaró que es distinto de `Diagnostico Kindle`. Confirmó que este último no aparece en Biblioteca y reconectó por USB. El archivo de diagnóstico mantiene el checksum correcto y no hay informes nuevos; FBInk USB continúa ausente.
 13. Preparado el acceso alternativo desde búsqueda, revisando `dispatch.sh` del payload y el registro de comandos. Copiado `RUNME.sh` (889 bytes, SHA-256 `3dd8d0471cdf891c6f0cdf4a0a7f6dc9cceb8abd5da7d72b1d160915300f5991`) sin sobrescribir un archivo anterior. Ejecuta únicamente el diagnóstico existente y registra el resultado técnico. Sintaxis local y copia verificadas.
 14. Tercera expulsión segura confirmada. Se indicó escribir `;log runme` en búsqueda, esperar 15 segundos y reconectar USB. Resultado pendiente.
+15. El usuario confirmó la prueba y reconectó. No hay informes de diagnóstico ni de lanzamiento. Se comprobó que ambos scripts conservan sus hashes y son ejecutables desde el montaje USB. FBInk USB sigue ausente. La ausencia de informe no permite distinguir entre un disparador sin configurar y una salida previa al registro por las guardas del script.
+16. Preparada una comprobación directa mediante el disparador de navegador ya utilizado. `newspaper-diagnostics/probe-001.sh` registra el inicio antes de comprobar la versión, identifica privilegios, herramientas de descompresión, espacio y rutas técnicas; después intenta el diagnóstico existente. Tiene bloqueo idempotente para evitar repeticiones por reintentos de transferencia. No instala, reinicia, abre shell de red ni cambia configuración del sistema.
+17. Copiados y comprobados: `probe-001.sh` (3,205 bytes, SHA-256 `6d940c7d024a7a4877a36596fe613111fe4a8ee5e48aeb3f0cdadc61d33ff48b`) y `newspaper-diagnostics/OWNER.txt`. Reemplazado únicamente el `winterbreak2/dialoger.html` conocido, después de verificar su hash original, por la adaptación diagnóstica (624 bytes, SHA-256 `d595054d9d28422b42c6cfc1888d3af666fccd09c99ca65abbc7570ff6836fc6`). Su comando llama al probe local; ya no descarga ni ejecuta jb.sh. No se creó una copia de respaldo del archivo del dispositivo.
+18. Sintaxis shell y JavaScript comprobadas sin ejecutar el probe. Cuarta expulsión segura confirmada. Se indicó Wi-Fi, abrir la misma página WB2 y pulsar una vez su botón para ejecutar el diagnóstico local; esperar unos 30 segundos y reconectar. Informe pendiente.
 
 ## Relleno temporal y decisión OTA
 
@@ -44,11 +48,12 @@ Comprobación al terminar: 8 archivos de relleno, 956,301,312 bytes de contenido
 - Relleno temporal: detenido y parcial; decisión de no completarlo documentada.
 - Ejecución del payload: observada en las fotos y corroborada por el marcador USB.
 - Jailbreak funcional: no confirmado; falta la copia USB de FBInk y aún no hay prueba de ejecución tras reiniciar.
-- Verificación post-jailbreak: el script no aparece en Biblioteca; acceso alternativo por búsqueda copiado y pendiente de ejecución e informe.
+- Verificación post-jailbreak: no hay informes por Biblioteca ni búsqueda. Probe directo preparado; pendiente de ejecución por navegador y lectura del informe.
 - Repositorio GitHub: privado, creado y primera subida a `main` verificada.
 - Backups: ninguno, por instrucción del usuario.
 - Reset y extracción de contenido personal: no realizados.
 - Portada sintética: PNG 600 × 800 en escala de grises generado e inspeccionado visualmente en el Mac. Prueba en la pantalla física pendiente.
-- Script de verificación: sintaxis validada con `sh -n`, copiado y checksum contrastado; ejecución pendiente.
+- Scripts de verificación: copiados y contrastados; ninguna ejecución confirmada por un informe hasta ahora.
+- Disparador local WB2: adaptado al diagnóstico; ya no contiene el comando de instalación original.
 
 Se actualizará este registro con resultados observados, separando archivos preparados, ejecución y funcionamiento verificado.

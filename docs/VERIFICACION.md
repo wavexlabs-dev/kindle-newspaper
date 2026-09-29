@@ -53,6 +53,20 @@ Paso manual: mantener Modo avión, escribir exactamente `;log runme` en la búsq
 
 Esta prueba comprueba ejecución a través del dispatcher. Aunque funcione, no confirma que SH_Integration esté registrado ni que el archivo aparezca en Biblioteca. La copia de `RUNME.sh` queda identificada como temporal para retirarla cuando se haya recogido la evidencia.
 
+**Resultado observado:** después de la prueba y reconexión no existe ningún informe. Los scripts siguen íntegros y ejecutables desde el montaje USB. No se ha demostrado que el dispatcher funcione; tampoco puede descartarse una salida temprana por las guardas anteriores al registro.
+
+## Comprobación directa desde el navegador
+
+Para obtener evidencia sin depender del dispatcher, KPM o SH_Integration, se prepararon [kindle_probe_direct.sh](../scripts/kindle_probe_direct.sh) y [winterbreak2_diagnostic.html](../scripts/winterbreak2_diagnostic.html). El servidor WB2 abre el `dialoger.html` local, según [su código](https://raw.githubusercontent.com/KindleModding/Winterbreak2/master/api/index.js). La adaptación conserva ese mecanismo y sustituye el comando de instalación por una llamada al probe copiado en USB.
+
+El probe sólo acepta Linux y el directorio propio con su marcador `OWNER.txt`. Crea un bloqueo `run-001.lock` para impedir ejecuciones repetidas, y guarda `newspaper-diagnostics/report-001.txt` antes de comprobar la versión. Recoge UID, arquitectura, disponibilidad de utilidades, espacio de `/tmp`, `/var/local` y USB, y metadatos de rutas concretas de KMC/OTA. No vuelca versiones completas, seriales, claves, red, libros ni logs generales. Después intenta el diagnóstico existente; éste puede inicializar la DB de KPM si el componente funciona, como ya está documentado.
+
+La copia USB de `winterbreak2/dialoger.html` ya no contiene `curl` ni `jb.sh`. Su comando usa únicamente el script local, con salida redirigida a los informes y un identificador de transferencia nuevo. Conserva la URL de transferencia loopback del mecanismo original; no envía el informe al sitio web, no abre puertos ni shell remota.
+
+Pasos: expulsar, conectar Wi-Fi, abrir `https://penguins184.xyz/wb2` y pulsar una vez su botón **Jailbreak**, que conserva ese nombre pero ahora dispara el diagnóstico. Esperar unos 30 segundos y reconectar USB. Puede dibujar `Diagnostico guardado. Conecta USB.`; la ausencia de ese mensaje visual no sustituye la inspección del informe. La evidencia de root será `uid=0`, no el mero uso del botón.
+
+Una falta de `base64`, `xz` o espacio interno podría explicar un desempaquetado fallido, pero sigue siendo una hipótesis hasta leer el informe. El paquete inspeccionado ocupa aproximadamente 24.33 MB sin comprimir, tanto durante extracción temporal como al copiar KMC. No se reinstalará ni reemplazará firmware como respuesta automática a un resultado incompleto.
+
 ## Cómo interpretar el informe
 
 | Evidencia | Qué confirma | Qué no confirma |

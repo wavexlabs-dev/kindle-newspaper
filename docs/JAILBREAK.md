@@ -4,7 +4,7 @@ Dispositivo del proyecto: Kindle Basic 2014 / 7.ª generación / KT2, prefijo de
 
 ## Estado
 
-Paquete descargado e inspeccionado; `winterbreak2/dialoger.html` copiado y checksum contrastado. El usuario ejecutó el instalador: fotos con `Done` y `Restarting GUI`, y marcador `documents/JAILBROKEN.txt` de jb.sh v1.3.7 comprobado por USB. **Verificación funcional pendiente:** `libkh/bin` existe pero falta su copia de FBInk. Se ha preparado y copiado el diagnóstico para comprobar los componentes internos después de reiniciar.
+Paquete descargado e inspeccionado; el usuario ejecutó el instalador: fotos con `Done` y `Restarting GUI`, y marcador `documents/JAILBROKEN.txt` de jb.sh v1.3.7 comprobado por USB. **Verificación funcional pendiente:** `libkh/bin` existe pero falta su copia de FBInk. No se obtuvo informe por Biblioteca ni búsqueda. El `dialoger.html` del dispositivo fue sustituido después por una adaptación que ejecuta únicamente un probe local; sus hashes y la intervención están en [REGISTRO.md](REGISTRO.md). Los hashes de release de esta página identifican el original descargado, no esa adaptación actual.
 
 El usuario autorizó comenzar el jailbreak y pidió expresamente **no hacer respaldo**. Confirmó batería suficiente (aproximadamente 50 % o más) y disponibilidad para usar la pantalla física. No se ha reseteado ni formateado el dispositivo.
 
