@@ -21,7 +21,7 @@ Produce un archivo nuevo en la raíz USB, `kt2-diagnostic-1.txt`, `kt2-diagnosti
 La prueba ejecuta:
 
 - Comprobaciones de existencia y permisos de los componentes esperados.
-- `fbink -e`, descartando los metadatos y guardando su código de salida. Inicializa el framebuffer sin dibujar.
+- `fbink -e`, descartando los metadatos y guardando su código de salida. Prueba el binario interno si existe, o la copia USB como alternativa, y registra la ruta elegida. Inicializa el framebuffer sin dibujar.
 - `kpm version`, guardando versión, plataforma y código de salida. No usa la red ni instala paquetes.
 - Comprobaciones de los nombres originales y `.bck` de OTA, y de si sus procesos están activos.
 
@@ -69,4 +69,4 @@ Una vez verificado el bloqueo OTA, podrá retirarse únicamente el relleno cread
 - [Manual FBInk: opción `-e`](https://github.com/NiLuJe/FBInk/blob/master/CLI.md).
 - [Instalador jb.sh](https://github.com/KindleModding/jb.sh); los nombres de archivos OTA y rutas anteriores se contrastaron además con el contenido empaquetado del instalador cuyo hash se registra arriba.
 
-Validación local del script: análisis de sintaxis con `sh -n`. La prueba en el Kindle sigue pendiente hasta obtener y revisar los informes.
+Validación local del script: análisis de sintaxis con `sh -n`. Copiado como `documents/KT2_Diagnostico.sh` y checksum contrastado: `504f188b97840a43efbfc9aa5057bde499b0c66bbe246af076d87872de41607f` (3,995 bytes). El volumen se expulsó de forma segura y se entregaron las instrucciones de reinicio y apertura desde Biblioteca. La prueba sigue pendiente hasta obtener y revisar el informe.

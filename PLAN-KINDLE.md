@@ -132,4 +132,4 @@ Para mostrar PNG directamente, **FBInk** ofrece soporte para Kindle; habrá que 
 - Reinicio y cambio entre tablero y lector funcionando.
 - Consumo medido durante un ensayo de 24–48 horas; última edición conservada ante fallos.
 
-**Estado al cerrar esta revisión:** diagnóstico y plan cloud terminados. Respaldo excluido por decisión del usuario. Limpieza, jailbreak, conexiones a las cuentas, generación del periódico y automatización pendientes. No se ha instalado ni reseteado el Kindle.
+**Estado actualizado:** diagnóstico y plan cloud terminados. Respaldo excluido por decisión del usuario. El instalador WinterBreak2 se ejecutó y dejó su marcador; la verificación funcional tras reinicio está pendiente y falta la copia USB esperada de FBInk. El detalle vigente está en [el registro](docs/REGISTRO.md). Limpieza, conexiones a las cuentas, generación del periódico y automatización siguen pendientes. No se ha reseteado el Kindle.

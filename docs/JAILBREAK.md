@@ -4,9 +4,11 @@ Dispositivo del proyecto: Kindle Basic 2014 / 7.ª generación / KT2, prefijo de
 
 ## Estado
 
-Paquete descargado e inspeccionado; `winterbreak2/dialoger.html` copiado al Kindle y checksum contrastado. **Todavía no se ha ejecutado el jailbreak en el Kindle.** La preparación de archivos no demuestra instalación.
+Paquete descargado e inspeccionado; `winterbreak2/dialoger.html` copiado y checksum contrastado. El usuario ejecutó el instalador: fotos con `Done` y `Restarting GUI`, y marcador `documents/JAILBROKEN.txt` de jb.sh v1.3.7 comprobado por USB. **Verificación funcional pendiente:** `libkh/bin` existe pero falta su copia de FBInk. Se ha preparado y copiado el diagnóstico para comprobar los componentes internos después de reiniciar.
 
 El usuario autorizó comenzar el jailbreak y pidió expresamente **no hacer respaldo**. Confirmó batería suficiente (aproximadamente 50 % o más) y disponibilidad para usar la pantalla física. No se ha reseteado ni formateado el dispositivo.
+
+Las fotos posteriores muestran batería al 30 %. El aviso `Application Error` durante la fase final está contemplado por el instalador: su código pide cerrarlo y seguir esperando. `Restart strategy 3` corresponde a la rama que ejecuta `telinit 5` cuando no detecta los servicios GUI más nuevos; no indica un tercer intento fallido. Esto explica el aviso, pero no prueba por sí solo que todos los pasos anteriores terminaran correctamente.
 
 ## Fuentes y versión fijada
 

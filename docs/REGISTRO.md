@@ -18,7 +18,11 @@ Fecha: 28 de septiembre de 2026. Zona del usuario: America/Mexico_City.
 4. ZIP extraído e inspeccionado en el Mac, sin ejecutar su código. Contiene un HTML de arranque que obtiene el instalador oficial por HTTPS.
 5. Copiado `/Volumes/Kindle/winterbreak2/dialoger.html`. SHA-256 del archivo en el dispositivo: `9d42a3c880bc6e6a7013a2f59e2d5e8525b369880384384d1c3d856fe7a6bbd5`; coincide con el archivo preparado.
 6. Preparadas exclusiones Git para descargas, datos, credenciales, ediciones privadas y logs.
-7. Volumen expulsado de forma segura mediante macOS, con respuesta `Disk /Volumes/Kindle ejected`. Se indicó al usuario desconectar, abrir `https://penguins184.xyz/wb2` en el navegador experimental y pulsar Jailbreak. Resultado y reconexión USB pendientes.
+7. Volumen expulsado de forma segura mediante macOS, con respuesta `Disk /Volumes/Kindle ejected`. Se indicó al usuario desconectar, abrir `https://penguins184.xyz/wb2` en el navegador experimental y pulsar Jailbreak.
+8. El usuario aportó fotos con salida de jb.sh v1.3.7, `Done`, `Restarting GUI` y `Restart strategy 3`, junto con `Application Error`. El código del instalador contempla ese aviso durante el reinicio GUI. Las fotos muestran batería al 30 %; no se incorporan al repositorio porque incluyen contenido personal de la biblioteca.
+9. Tras la reconexión USB se comprobó firmware sin cambios y `documents/JAILBROKEN.txt` (108 bytes), identificando jb.sh v1.3.7 y Winterbreak2. Existe `libkh/bin` pero está vacío: falta la copia esperada de FBInk. El espacio libre es 1,918,722,048 bytes en esa comprobación. No se había generado ningún informe de diagnóstico.
+10. Actualizado el diagnóstico para probar FBInk interno si está disponible. Copiado `documents/KT2_Diagnostico.sh`, 3,995 bytes, SHA-256 `504f188b97840a43efbfc9aa5057bde499b0c66bbe246af076d87872de41607f`; igualdad entre original y copia comprobada. Sólo se añadió ese archivo, sin reinstalar ni borrar componentes.
+11. Segunda expulsión segura confirmada. Se indicó Modo avión, reinicio completo, abrir `Diagnostico Kindle` desde Biblioteca y reconectar USB. Resultado pendiente.
 
 ## Relleno temporal y decisión OTA
 
@@ -35,13 +39,13 @@ Comprobación al terminar: 8 archivos de relleno, 956,301,312 bytes de contenido
 - Copia al Kindle: realizada y checksum verificado.
 - Expulsión segura: confirmada; instrucciones del paso físico entregadas al usuario.
 - Relleno temporal: detenido y parcial; decisión de no completarlo documentada.
-- Ejecución del payload: no realizada; pendiente del paso físico.
-- Jailbreak: no confirmado.
-- Verificación post-jailbreak: pendiente.
+- Ejecución del payload: observada en las fotos y corroborada por el marcador USB.
+- Jailbreak funcional: no confirmado; falta la copia USB de FBInk y aún no hay prueba de ejecución tras reiniciar.
+- Verificación post-jailbreak: diagnóstico copiado, pendiente del paso físico y su informe.
 - Repositorio GitHub: privado, creado y primera subida a `main` verificada.
 - Backups: ninguno, por instrucción del usuario.
 - Reset y extracción de contenido personal: no realizados.
 - Portada sintética: PNG 600 × 800 en escala de grises generado e inspeccionado visualmente en el Mac. Prueba en la pantalla física pendiente.
-- Script de verificación: preparado localmente, sintaxis validada con `sh -n`; todavía no copiado ni ejecutado en el Kindle.
+- Script de verificación: sintaxis validada con `sh -n`, copiado y checksum contrastado; ejecución pendiente.
 
 Se actualizará este registro con resultados observados, separando archivos preparados, ejecución y funcionamiento verificado.

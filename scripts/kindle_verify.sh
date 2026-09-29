@@ -74,9 +74,16 @@ printf 'kmc_bin_target='
 readlink /var/local/kmc/bin 2>/dev/null || printf '%s\n' 'unavailable'
 
 # -e initializes FBInk and reads screen state without drawing a frame.
-# Discard metadata: the exit code is sufficient for this diagnostic.
-if [ -x /mnt/us/libkh/bin/fbink ]; then
-    /mnt/us/libkh/bin/fbink -e >/dev/null 2>&1
+# Check internal FBInk too if the convenience copy on USB is missing.
+fbink_path=''
+if [ -x /var/local/kmc/bin/fbink ]; then
+    fbink_path=/var/local/kmc/bin/fbink
+elif [ -x /mnt/us/libkh/bin/fbink ]; then
+    fbink_path=/mnt/us/libkh/bin/fbink
+fi
+printf 'fbink_test_path=%s\n' "${fbink_path:-unavailable}"
+if [ -n "$fbink_path" ]; then
+    "$fbink_path" -e >/dev/null 2>&1
     printf 'fbink_initialization_rc=%s\n' "$?"
 else
     printf '%s\n' 'fbink_initialization_rc=not_run'

@@ -6,9 +6,9 @@ El servicio en la nube investigará a partir de newsletters seleccionadas de Gma
 
 ## Estado del proyecto
 
-**Archivos del jailbreak preparados.** El repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper) ya está creado y su primera subida a `main` está verificada. El archivo de arranque de WinterBreak2 se ha copiado al Kindle y su checksum coincide. Se omitió completar el relleno temporal tras confirmar que el firmware instalado coincide con la última versión que Amazon ofrece para este modelo; la decisión y el relleno parcial restante están documentados.
+**Instalador ejecutado; verificación funcional pendiente.** Las fotos del dispositivo muestran `Done` y `Restarting GUI`; por USB se ha comprobado el marcador `JAILBROKEN.txt` de jb.sh v1.3.7. La carpeta `libkh/bin` existe pero falta la copia USB esperada de FBInk. Se copió un diagnóstico para comprobar los componentes internos después de un reinicio completo.
 
-**El payload aún no se ha ejecutado y el jailbreak no está confirmado.** Tampoco están conectadas las cuentas, desplegado el servicio cloud ni probada la actualización automática. El estado de cada intervención se registra en [docs/REGISTRO.md](docs/REGISTRO.md).
+El proyecto está documentado en el repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper). **El marcador del instalador todavía no demuestra un jailbreak funcional.** Tampoco están conectadas las cuentas, desplegado el servicio cloud ni probada la actualización automática. El estado de cada intervención se registra en [docs/REGISTRO.md](docs/REGISTRO.md).
 
 | Dispositivo auditado | Valor |
 | --- | --- |
