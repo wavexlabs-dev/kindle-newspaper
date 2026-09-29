@@ -31,6 +31,14 @@ export const Editorial = z.object({
   articles: z.array(Article).min(3).max(6),
 }).strict();
 
+// Structured Outputs does not accept JSON Schema's `uri` format. Keep full
+// URL validation in Editorial after parsing the response from the API.
+export const EditorialResponse = Editorial.extend({
+  articles: z.array(Article.extend({
+    sources: z.array(z.string().regex(/^https:\/\//)).min(1).max(4),
+  })).min(3).max(6),
+});
+
 export function assertProvenance(editorial, sourceURLs) {
   const allowed = new Set(sourceURLs);
   for (const article of editorial.articles) for (const source of article.sources) {

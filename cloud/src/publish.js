@@ -46,7 +46,9 @@ export async function generate(store, day, { retryFailed = false } = {}) {
   // Fail closed on concurrent/repeated invocation: a failed day requires review,
   // not unlimited paid retries. Never silently fall back to demo content.
   const prior = await store.json(`runs/${day}.json`);
-  if (prior && (!retryFailed || prior.status !== 'failed' || (prior.attempt || 1) >= 2)) throw new Error('Generation already attempted; review required');
+  // One repair attempt is allowed for the verified legacy URI-schema 400.
+  const schemaRepair = prior?.attempt === 2 && prior?.stage === 'editorial' && prior?.error?.status === 400;
+  if (prior && (!retryFailed || prior.status !== 'failed' || ((prior.attempt || 1) >= 2 && !schemaRepair))) throw new Error('Generation already attempted; review required');
   const attempt = prior ? (prior.attempt || 1) + 1 : 1;
   if (prior) await store.writeJSON(`runs/${day}-retry-${attempt}.json`, { at: new Date().toISOString() });
   const audit = { attempt, at: new Date().toISOString(), stage: 'sources' };

@@ -204,3 +204,12 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - El propietario completó la creación del cliente «La Señal — Vercel». Verificado en la consola el cliente web habilitado y la URI exacta `/oauth/callback` del servicio, sin orígenes JavaScript adicionales.
 - Identificador y secreto guardados como variables sensibles `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` de producción en Vercel. Ningún valor secreto se incluye en Git.
 - El acceso efectivo de las cuentas requiere todavía finalizar los consentimientos y comprobar los tokens desde el servicio. La aplicación está en modo Testing; no se declara operación diaria permanente.
+
+### Conexiones reales y diagnóstico del primer periódico
+
+- Servicio verificado con ambas cuentas Google conectadas. La lectura real obtuvo 9 newsletters y 1 evento del calendario; no se guardó su contenido en Git.
+- La generación falló en etapa editorial con HTTP 400. Una petición aislada con datos ficticios confirmó `invalid_json_schema`: Structured Outputs rechaza el formato JSON Schema `uri` en las fuentes.
+- Corregido el esquema enviado a OpenAI para usar cadenas HTTPS; se conserva la validación completa de URLs y su pertenencia a las fuentes investigadas después de recibir la respuesta.
+- Una petición mínima con la misma clave respondió HTTP 200, completed, 14 tokens. No hay evidencia de que este fallo sea por saldo; la prueba no consulta el balance de facturación.
+- Aún no hay una edición real publicada. Los dos intentos fallidos permanecen registrados y la protección contra reintentos ilimitados sigue activa.
+- El esquema corregido fue aceptado con HTTP 200 en una prueba sintética limitada a 32 tokens (respuesta incompleta por ese límite deliberado). Se habilita una única recuperación manual adicional solamente para el intento 2 fallido con HTTP 400 en etapa editorial; cron no reintenta y el intento 3 vuelve a quedar bloqueado si falla.

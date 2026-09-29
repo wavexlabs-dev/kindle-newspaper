@@ -8,3 +8,11 @@ test('generation audit only exposes known errors and strips private upstream mes
   error.name = 'ZodError';
   assert.equal(safeGenerationError(error), 'Editorial schema validation failed');
 });
+
+test('editorial API schema avoids unsupported uri format while local validation rejects malformed URLs', async () => {
+  const { zodTextFormat } = await import('openai/helpers/zod');
+  const { EditorialResponse, Article } = await import('../src/edition.js');
+  const schema = zodTextFormat(EditorialResponse, 'editorial').schema;
+  assert.equal(JSON.stringify(schema).includes('"format":"uri"'), false);
+  assert.equal(Article.shape.sources.safeParse(['https://']).success, false);
+});
