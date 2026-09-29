@@ -25,11 +25,20 @@ exec >>"$BASE/reader-$n.txt" 2>&1
 printf 'reader_started=1\nutc='
 date -u '+%Y-%m-%dT%H:%M:%SZ'
 cd "$BASE" || exit 1
-/bin/busybox sha256sum -c current.sha256 || exit 1
+DOC="$BASE/current.cbz"
+SUM="$BASE/current.sha256"
+active=$(cat "$BASE/active-edition.txt" 2>/dev/null)
+if printf '%s\n' "$active" | /bin/busybox grep -Eq '^edition-[0-9]{4}-[0-9]{2}-[0-9]{2}-(daily|[0-9]{13})\.cbz$'; then
+    if [ -f "$BASE/$active" ] && [ -f "$BASE/active.sha256" ] && /bin/busybox sha256sum -c "$BASE/active.sha256"; then
+        DOC="$BASE/$active"
+        SUM="$BASE/active.sha256"
+    fi
+fi
+/bin/busybox sha256sum -c "$SUM" || exit 1
 printf 'edition_checksum_match=1\n'
 # The unmodified upstream wrapper restores the UI/services it pauses on exit.
 # Do not use --framework_stop; no boot, RTC or power settings are changed here.
-/bin/sh "$KO/koreader.sh" "$BASE/current.cbz"
+/bin/sh "$KO/koreader.sh" "$DOC"
 rc=$?
 printf 'reader_exit_code=%s\n' "$rc"
 sync

@@ -12,10 +12,17 @@ export function validDay(day) {
   return typeof day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(day) && DateTime.fromISO(day, { zone: ZONE }).isValid;
 }
 
+export function editionKey(day, revision) {
+  if (!validDay(day) || (revision !== undefined && !/^[0-9]{13}$/.test(revision))) throw new Error('Invalid edition identity');
+  return revision ? `${day}/revisions/${revision}` : day;
+}
 export function validManifest(value, day) {
   if (!validDay(day) || !value || value.version !== 1 || value.day !== day || value.width !== 600 || value.height !== 800) return false;
+  let key;
+  try { key = editionKey(day, value.revision); } catch { return false; }
+  if (value.bundle && !(value.bundle.path === `/device/editions/${key}/edition.cbz` && /^[a-f0-9]{64}$/.test(value.bundle.sha256) && Number.isInteger(value.bundle.bytes) && value.bundle.bytes > 0 && value.bundle.bytes <= 31000000)) return false;
   if (!Array.isArray(value.pages) || value.pages.length < 1 || value.pages.length > 20) return false;
-  return value.pages.every((p, i) => p && typeof p === 'object' && p.number === i + 1 && p.path === `/device/editions/${day}/page-${i + 1}.png`
+  return value.pages.every((p, i) => p && typeof p === 'object' && p.number === i + 1 && p.path === `/device/editions/${key}/page-${i + 1}.png`
     && typeof p.sha256 === 'string' && /^[a-f0-9]{64}$/.test(p.sha256)
     && Number.isInteger(p.bytes) && p.bytes > 0 && p.bytes <= 1500000);
 }

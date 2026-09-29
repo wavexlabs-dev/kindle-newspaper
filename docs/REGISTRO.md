@@ -255,3 +255,10 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - Actualizado `cloud/README.md` con permisos de lista de calendarios, tercera llamada para imagen, caché de borradores, endpoints, variables y límites reales. Documentos antiguos marcados como históricos.
 - Añadidas cuatro capturas de páginas renderizadas: portada real de diseño y tres interiores con contenido sintético. Reproducibles con `node cloud/scripts/render-tutorial.js`, sin claves ni llamadas pagadas. No se publican capturas de agenda personal ni se presentan renders como fotografías del Kindle.
 - El repositorio sigue privado y sin licencia general de distribución. El tutorial no cambia visibilidad ni declara compatibilidad universal; la descarga diaria del lector y despertar automático siguen pendientes.
+
+### Cliente de edición completa por Wi-Fi y prueba de alarma
+
+- Añadidas revisiones inmutables por fecha, CBZ descargable ligado al manifiesto por SHA-256 y bytes, y confirmaciones autenticadas del dispositivo. Una revisión nueva no sobrescribe las páginas previas.
+- Pruebas de servidor: ZIP leído con verificación CRC por Python; publicación parcial de revisión no oculta la anterior; revisión completa pasa a ser la última; rutas externas/revisiones inseguras rechazadas. Suite de 19 pruebas correcta.
+- Preparado complemento KOReader con HTTPS nativo, verificación del CBZ, cambio de documento, alarmas mediante el gestor de KOReader y prueba de 3 minutos. Sintaxis Lua verificada con luaparse; sintaxis shell del lanzador verificada.
+- Estado al preparar: Kindle no montado. Instalación y pruebas físicas de descarga completa/despertar aún pendientes; no se declara entrega a las 08:00 verificada.

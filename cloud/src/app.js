@@ -2,7 +2,7 @@ import express from 'express';
 import { Store } from './store.js';
 import { equalSecret } from './security.js';
 import { startOAuth, finishOAuth, calendar, allCalendarsAuthorized } from './google.js';
-import { dayKey } from './edition.js';
+import { dayKey, editionKey } from './edition.js';
 import { latest, generate } from './publish.js';
 import { renderEdition } from './render.js';
 import { deliverySample } from './sample.js';
@@ -30,13 +30,13 @@ export function createApp(store = new Store()) {
     await finishOAuth(store, req.query.state, req.query.code);
     res.type('text').send('Cuenta conectada a La Señal. Ya puedes cerrar esta pestaña.');
   });
-  app.get('/admin/status', auth('ADMIN_TOKEN'), async (_req, res) => res.json({
+  app.get('/admin/status', auth('ADMIN_TOKEN'), async (req, res) => res.json({
     newsletters: !!await store.read('oauth/newsletters'), calendar: !!await store.read('oauth/calendar'),
     all_calendars_authorized: await allCalendarsAuthorized(store),
-    latest: (await latest(store))?.day || null, today: await store.json(`runs/${dayKey()}.json`),
+    latest: (await latest(store))?.day || null, device_receipt:await store.json('device/last-receipt.json'), alarm_receipt:await store.json('device/last-alarm.json'), today: await store.json(`runs/${editionKey(dayKey(), req.query.revision)}.json`),
   }));
   app.get('/admin/agenda', auth('ADMIN_TOKEN'), async (_req, res) => res.json({day:dayKey(), agenda:await calendar(store,dayKey())}));
-  app.post('/admin/generate', auth('ADMIN_TOKEN'), async (req, res) => res.json(await generate(store, dayKey(), { retryFailed: req.body?.retryFailed === true })));
+  app.post('/admin/generate', auth('ADMIN_TOKEN'), async (req, res) => res.json(await generate(store, dayKey(), { retryFailed: req.body?.retryFailed === true, revision:req.body?.revision })));
   app.post('/admin/test-delivery', auth('ADMIN_TOKEN'), async (_req, res) => {
     const [png] = await renderEdition(deliverySample(dayKey()));
     // Explicit test object, never published as the daily edition.
@@ -50,6 +50,14 @@ export function createApp(store = new Store()) {
     res.json(result);
   });
   app.use('/device', auth('DEVICE_TOKEN'));
+  app.post('/device/receipt', async (req,res) => {
+    const {day,revision,stage,pages,trigger} = req.body || {};
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day || '') || (revision !== undefined && !/^\d{13}$/.test(revision)) || !['downloaded','opened','alarm'].includes(stage) || !Number.isInteger(pages) || pages<1 || pages>20) return res.sendStatus(400);
+    const receipt={day,...(revision?{revision}:{}),stage,pages,trigger:['reader_open','manual','test_alarm','morning_alarm','retry','retry_next_day'].includes(trigger)?trigger:'unknown',at:new Date().toISOString()};
+    await store.writeJSON('device/last-receipt.json',receipt,{overwrite:true});
+    if (receipt.trigger==='test_alarm' || receipt.trigger==='morning_alarm') await store.writeJSON('device/last-alarm.json',receipt,{overwrite:true});
+    res.json({ok:true});
+  });
   app.get('/device/test-cover.png', async (_req, res) => {
     const png = await store.read('checks/cover.png');
     if (!png) return res.sendStatus(404);
@@ -60,14 +68,16 @@ export function createApp(store = new Store()) {
     if (!edition) return res.status(503).json({ error: 'No published edition' });
     res.json(edition);
   });
-  app.get('/device/editions/:day/:file', async (req, res) => {
-    const { day, file } = req.params;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !/^(page-([1-9]|1\d|20)\.png|edition\.json)$/.test(file)) return res.sendStatus(404);
+  app.get(['/device/editions/:day/:file','/device/editions/:day/revisions/:revision/:file'], async (req, res) => {
+    const { day, file, revision } = req.params;
+    if (revision !== undefined && !/^\d{13}$/.test(revision)) return res.sendStatus(404);
+    const key = revision ? `${day}/revisions/${revision}` : day;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !/^(page-([1-9]|1\d|20)\.png|edition\.json|edition\.cbz)$/.test(file)) return res.sendStatus(404);
     // Uncommitted uploads are never visible to readers.
-    if (!await store.read(`editions/${day}/manifest.json`)) return res.sendStatus(404);
-    const data = await store.read(`editions/${day}/${file}`);
+    if (!await store.read(`editions/${key}/manifest.json`)) return res.sendStatus(404);
+    const data = await store.read(`editions/${key}/${file}`);
     if (!data) return res.sendStatus(404);
-    res.type(file.endsWith('.png') ? 'image/png' : 'application/json').send(data);
+    res.type(file.endsWith('.png') ? 'image/png' : file.endsWith('.cbz') ? 'application/vnd.comicbook+zip' : 'application/json').send(data);
   });
   app.use((_req, res) => res.sendStatus(404));
   app.use((error, _req, res, _next) => {
