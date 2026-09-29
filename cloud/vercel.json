@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "framework": null,
+  "functions": { "api/index.js": { "maxDuration": 300, "includeFiles": "fonts/**" } },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }],
+  "crons": [{ "path": "/cron/generate", "schedule": "0 12 * * *" }]
+}
