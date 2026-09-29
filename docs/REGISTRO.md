@@ -213,3 +213,10 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - Una petición mínima con la misma clave respondió HTTP 200, completed, 14 tokens. No hay evidencia de que este fallo sea por saldo; la prueba no consulta el balance de facturación.
 - Aún no hay una edición real publicada. Los dos intentos fallidos permanecen registrados y la protección contra reintentos ilimitados sigue activa.
 - El esquema corregido fue aceptado con HTTP 200 en una prueba sintética limitada a 32 tokens (respuesta incompleta por ese límite deliberado). Se habilita una única recuperación manual adicional solamente para el intento 2 fallido con HTTP 400 en etapa editorial; cron no reintenta y el intento 3 vuelve a quedar bloqueado si falla.
+
+### Primera edición real publicada y prueba física preparada
+
+- Tras corregir el esquema, el intento 3 terminó HTTP 200: `published`, fecha 2026-09-29, seis páginas. Insumos: nueve newsletters seleccionadas y un evento del calendario conectado.
+- Las seis páginas se descargaron mediante la credencial del dispositivo; tamaños, SHA-256 y dimensiones 600×800 coinciden con el manifiesto. Portada inspeccionada visualmente en el Mac, legible y sin cortes. No equivale a recepción física en el Kindle.
+- Preparado `scripts/kindle_test_real_edition.sh`, prueba acotada a la portada de esta fecha. Copiado en el directorio propio `newspaper-real-test`, `RUNME.sh` y `documents/Periodico_real.sh`, con credencial privada, certificado y checksum esperado fuera de Git. Lanzador releído: `de2c37713704f258296033e917873012eb72c3fca23534139572403b07c0e073`.
+- Pendiente abrir «Periodico real» o ejecutar `;log runme` con Wi-Fi y sin USB, confirmar la portada y revisar el registro numerado. No se ha instalado todavía un lector multipágina ni confirmado despertar autónomo.
