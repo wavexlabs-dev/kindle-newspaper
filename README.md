@@ -57,6 +57,8 @@ Los supuestos de costes se mantienen en [PLAN-KINDLE.md](PLAN-KINDLE.md#comparac
 
 Se regenera con `python3 scripts/render_test_cover.py`. Requiere Pillow y, por defecto, las fuentes Georgia y Arial locales de macOS. El parámetro `--font-dir` permite indicar otra carpeta que contenga esos archivos; no se redistribuyen fuentes. El diseño se ha inspeccionado en el Mac y sigue pendiente la prueba física.
 
+[scripts/kindle_preview_cover.sh](scripts/kindle_preview_cover.sh) prepara una prueba de 15 segundos con FBInk y retorno a la interfaz original. Su sintaxis está verificada; aún no se ha copiado ni ejecutado en el Kindle. Se utilizará después de comprobar la instalación tras reiniciar.
+
 ## Referencias
 
 - [Glanceboard](https://github.com/google-gemini/glanceboard): referencia del patrón servidor → imagen → pantalla; su firmware no corresponde a este Kindle.
