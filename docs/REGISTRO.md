@@ -30,6 +30,15 @@ Fecha: 28 de septiembre de 2026. Zona del usuario: America/Mexico_City.
 16. Preparada una comprobación directa mediante el disparador de navegador ya utilizado. `newspaper-diagnostics/probe-001.sh` registra el inicio antes de comprobar la versión, identifica privilegios, herramientas de descompresión, espacio y rutas técnicas; después intenta el diagnóstico existente. Tiene bloqueo idempotente para evitar repeticiones por reintentos de transferencia. No instala, reinicia, abre shell de red ni cambia configuración del sistema.
 17. Copiados y comprobados: `probe-001.sh` (3,205 bytes, SHA-256 `6d940c7d024a7a4877a36596fe613111fe4a8ee5e48aeb3f0cdadc61d33ff48b`) y `newspaper-diagnostics/OWNER.txt`. Reemplazado únicamente el `winterbreak2/dialoger.html` conocido, después de verificar su hash original, por la adaptación diagnóstica (624 bytes, SHA-256 `d595054d9d28422b42c6cfc1888d3af666fccd09c99ca65abbc7570ff6836fc6`). Su comando llama al probe local; ya no descarga ni ejecuta jb.sh. No se creó una copia de respaldo del archivo del dispositivo.
 18. Sintaxis shell y JavaScript comprobadas sin ejecutar el probe. Cuarta expulsión segura confirmada. Se indicó Wi-Fi, abrir la misma página WB2 y pulsar una vez su botón para ejecutar el diagnóstico local; esperar unos 30 segundos y reconectar. Informe pendiente.
+19. El informe del probe ejecutado desde el navegador confirmó `uid=0`, `armv7l` y firmware `5.12.2.2`. KMC está vacío salvo enlaces colgantes: faltan FBInk, KPM, Gandalf y el hook de arranque. Los componentes OTA están presentes y en ejecución. Queda confirmado acceso root por el disparador, no una instalación funcional ni persistente de KMC.
+20. Revisado el archivo embebido en jb.sh: usa un diccionario XZ de 64 MiB y produce un tar de 24,330,240 bytes; el diagnóstico observó 26,332 KiB libres en `/tmp`. Son restricciones relevantes, pero no establecen la causa exacta del fallo inicial de extracción. No se presenta una hipótesis como causa confirmada.
+21. Preparada una reparación offline mediante `scripts/build_offline_repair.py`, a partir de jb.sh v1.3.7 con SHA-256 `65a63528fbe9515950cc3aa0d931749548680f37898a3819a4ebc0a740588942`. Incluye 38 archivos oficiales ya extraídos, manifiesto, checksums y un diff de la adaptación de la cola del instalador. Se omiten las limpiezas USB del original y su bloque final de reinicio/marcador; se añaden comprobaciones de copia, integridad y funcionamiento.
+22. Preparados un wrapper root con `RUN_MODE=1`, sin debug ni reinicio automático, y una comprobación de una sola ejecución tras reiniciar mediante el hook oficial y `emergency.sh`. Se habilita esta última sólo si pasan las comprobaciones previas. Detalles en [REPARACION.md](REPARACION.md). La preparación no demuestra que se hayan copiado ni ejecutado esos controles en el Kindle.
+23. Validación en host del verificador: 5/5 pruebas pasan, incluidas detección de payload alterado, OTA activo y respuestas KPM inválidas. La prueba de SUID está simulada porque el sandbox de macOS elimina ese bit. No son ejecuciones de los binarios ARM ni validación de la reparación en el dispositivo.
+24. Antes de copiar, se añadió restauración explícita de modos Unix porque el volumen FAT no los conserva: 20 archivos a `0755`, 18 a `0644` y 10 directorios a `0755`, según el archivo oficial, antes de aplicar SUID e inmutabilidad. SHA-256 de la cola adaptada: `ee351970a14b5c0c199af4ed5591d3a715c886e50b98a379e81a05d50ab40878`.
+25. Copiado el paquete completo a `/Volumes/Kindle/newspaper-repair`: 49 archivos y 24,331,704 bytes. Todos se releyeron desde el dispositivo y se verificaron con hashes. SHA-256 de `bundle.sha256`: `ef921ebbb16b06b68387ae0d7abb07cc1757f5ade938a1e911b4076f0e2fae44`.
+26. Después de verificar el paquete se configuró `winterbreak2/dialoger.html` para ejecutar la reparación local. SHA-256 de esta adaptación: `45f23379a96a11fcd038b4e38a931aa609d289ae8a2e799bcefb09beea0aa469`. Esto confirma preparación del disparador, no ejecución de la reparación. Instalación y verificación posterior al reinicio siguen pendientes.
+27. Quinta expulsión segura confirmada: `Disk /Volumes/Kindle ejected`. Se indicó desconectar USB, conectar Wi-Fi y pulsar una vez el botón de WB2 para ejecutar la reparación local. Si aparece `Reparacion lista`, activar Modo avión, reiniciar completamente y reconectar; si aparece `Revision pendiente`, reconectar sin reiniciar. El resultado de ese paso todavía está pendiente.
 
 ## Relleno temporal y decisión OTA
 
@@ -41,19 +50,22 @@ Comprobación al terminar: 8 archivos de relleno, 956,301,312 bytes de contenido
 
 ## Estado actual
 
-- Diagnóstico: verificado por lectura USB.
+- Diagnóstico: lectura USB y ejecución root por navegador confirmadas.
 - Paquete WinterBreak2: descargado y verificado.
 - Copia al Kindle: realizada y checksum verificado.
-- Expulsión segura: confirmada; instrucciones del paso físico entregadas al usuario.
+- Expulsión segura: quinta expulsión confirmada; instrucciones de reparación y ramas de resultado entregadas al usuario.
 - Relleno temporal: detenido y parcial; decisión de no completarlo documentada.
 - Ejecución del payload: observada en las fotos y corroborada por el marcador USB.
-- Jailbreak funcional: no confirmado; falta la copia USB de FBInk y aún no hay prueba de ejecución tras reiniciar.
-- Verificación post-jailbreak: no hay informes por Biblioteca ni búsqueda. Probe directo preparado; pendiente de ejecución por navegador y lectura del informe.
+- Jailbreak funcional: instalación incompleta confirmada; KMC sin sus archivos y sin hook de arranque.
+- Bloqueo OTA: no instalado; componentes presentes y en ejecución en el diagnóstico.
+- Verificación post-jailbreak: Biblioteca y búsqueda no produjeron informes; el probe directo sí confirmó root y expuso la instalación incompleta.
+- Reparación offline: preparada, copiada y releída con hashes; disparador configurado. Ejecución y reinicio pendientes.
+- Causa del fallo de extracción inicial: no establecida.
 - Repositorio GitHub: privado, creado y primera subida a `main` verificada.
 - Backups: ninguno, por instrucción del usuario.
 - Reset y extracción de contenido personal: no realizados.
 - Portada sintética: PNG 600 × 800 en escala de grises generado e inspeccionado visualmente en el Mac. Prueba en la pantalla física pendiente.
-- Scripts de verificación: copiados y contrastados; ninguna ejecución confirmada por un informe hasta ahora.
-- Disparador local WB2: adaptado al diagnóstico; ya no contiene el comando de instalación original.
+- Scripts de verificación: el probe directo ejecutó y produjo evidencia; la verificación integral de la reparación sigue pendiente.
+- Disparador local WB2: el diagnóstico ejecutó; posteriormente se sustituyó el HTML por la adaptación de reparación verificada. La reparación todavía no se ha ejecutado.
 
 Se actualizará este registro con resultados observados, separando archivos preparados, ejecución y funcionamiento verificado.

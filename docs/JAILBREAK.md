@@ -4,7 +4,11 @@ Dispositivo del proyecto: Kindle Basic 2014 / 7.ª generación / KT2, prefijo de
 
 ## Estado
 
-Paquete descargado e inspeccionado; el usuario ejecutó el instalador: fotos con `Done` y `Restarting GUI`, y marcador `documents/JAILBROKEN.txt` de jb.sh v1.3.7 comprobado por USB. **Verificación funcional pendiente:** `libkh/bin` existe pero falta su copia de FBInk. No se obtuvo informe por Biblioteca ni búsqueda. El `dialoger.html` del dispositivo fue sustituido después por una adaptación que ejecuta únicamente un probe local; sus hashes y la intervención están en [REGISTRO.md](REGISTRO.md). Los hashes de release de esta página identifican el original descargado, no esa adaptación actual.
+El usuario ejecutó el instalador: fotos con `Done` y `Restarting GUI`, y marcador `documents/JAILBROKEN.txt` de jb.sh v1.3.7 comprobado por USB. El diagnóstico posterior desde el navegador confirmó ejecución con `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`, pero **la instalación quedó incompleta**: KMC está vacío salvo enlaces colgantes, faltan FBInk, KPM, Gandalf y el hook de arranque, y OTA permanece presente y en ejecución. El marcador no demostraba instalación funcional ni persistencia.
+
+Se ha preparado una [reparación offline](REPARACION.md) basada en los 38 archivos oficiales del instalador fijado por hash. El paquete completo de 49 archivos se copió y releyó con hashes; después se configuró el disparador local para llamar a la reparación. Su ejecución y el reinicio están pendientes. Los hashes de esta intervención constan en [REGISTRO.md](REGISTRO.md).
+
+El `dialoger.html` original fue sustituido por una adaptación diagnóstica que ejecutó un probe local. Los hashes de release de esta página identifican el original descargado; no deben usarse para identificar adaptaciones posteriores. La sección del paso físico conserva el procedimiento inicial, ya realizado; no es una indicación de repetir el instalador remoto.
 
 El usuario autorizó comenzar el jailbreak y pidió expresamente **no hacer respaldo**. Confirmó batería suficiente (aproximadamente 50 % o más) y disponibilidad para usar la pantalla física. No se ha reseteado ni formateado el dispositivo.
 
@@ -66,6 +70,8 @@ El acceso USB disponible permite copiar archivos; no controla la pantalla del Ki
 6. Comunicar el resultado y reconectar por USB cuando el dispositivo haya terminado y vuelto a responder.
 
 ## Verificación posterior
+
+El diagnóstico directo ya permitió identificar la instalación incompleta. La siguiente fase es la reparación preparada y sus comprobaciones integrales descritas en [REPARACION.md](REPARACION.md), seguida de evidencia tras un reinicio real. La causa exacta del fallo de extracción inicial no está establecida.
 
 Comprobar `documents/JAILBROKEN.txt` si lo genera el instalador, la versión anotada y cualquier salida de instalación. El marcador por sí solo no basta: verificar que, tras reiniciar, funciona una aplicación o scriptlet compatible y el gestor de paquetes. Inspeccionar el bloqueo OTA antes de retirar el relleno creado por este proyecto. El procedimiento concreto se documenta en [VERIFICACION.md](VERIFICACION.md).
 

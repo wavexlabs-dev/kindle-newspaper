@@ -6,7 +6,9 @@ El servicio en la nube investigará a partir de newsletters seleccionadas de Gma
 
 ## Estado del proyecto
 
-**Instalador ejecutado; verificación funcional pendiente.** Las fotos muestran `Done` y `Restarting GUI`; por USB se comprobó el marcador `JAILBROKEN.txt` de jb.sh v1.3.7. Falta la copia USB esperada de FBInk y no se obtuvo informe por Biblioteca ni búsqueda. Se preparó una comprobación directa desde el navegador: el disparador local WB2 ejecutará un probe técnico, sin descargar ni ejecutar de nuevo el instalador.
+**Acceso root confirmado; instalación incompleta.** El diagnóstico ejecutado desde el navegador confirma `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`. KMC está vacío salvo enlaces colgantes; faltan FBInk, KPM, Gandalf y el hook de arranque. Los componentes OTA siguen presentes y en ejecución. El marcador `JAILBROKEN.txt` no demostraba una instalación funcional.
+
+Se ha preparado y copiado al Kindle una [reparación offline](docs/REPARACION.md) con 38 archivos oficiales del instalador fijado por hash y controles adicionales. Los 49 archivos del paquete completo se releyeron y verificaron, y el disparador local quedó configurado para la reparación. **La copia no acredita ejecución: reparación y reinicio siguen pendientes.** Las cinco pruebas del verificador pasaron en el Mac con componentes simulados; no son pruebas de ejecución ARM en el Kindle.
 
 El proyecto está documentado en el repositorio privado [wavexlabs-dev/kindle-newspaper](https://github.com/wavexlabs-dev/kindle-newspaper). **El marcador del instalador todavía no demuestra un jailbreak funcional.** Tampoco están conectadas las cuentas, desplegado el servicio cloud ni probada la actualización automática. El estado de cada intervención se registra en [docs/REGISTRO.md](docs/REGISTRO.md).
 
@@ -36,6 +38,7 @@ El Mac sirve para la preparación inicial y el mantenimiento. La operación diar
 - [Arquitectura y criterios de aceptación](docs/ARQUITECTURA.md).
 - [Preparación y procedimiento del jailbreak](docs/JAILBREAK.md).
 - [Verificación de ejecución, reinicio y bloqueo OTA](docs/VERIFICACION.md).
+- [Diagnóstico y reparación offline preparada](docs/REPARACION.md).
 - [Registro de intervenciones y pruebas](docs/REGISTRO.md).
 
 La primera fase es habilitar y verificar la ejecución de software propio en esta unidad. La siguiente prueba decisiva es que despierte desde reposo, descargue una portada y la muestre de forma fiable. La compatibilidad indicada por una guía no sustituye esa prueba física.

@@ -1,6 +1,12 @@
 # Verificación después de WinterBreak2
 
-Objetivo: comprobar el entorno instalado en el Kindle Basic 2014 / KT2 con firmware 5.12.2.2, conservar evidencia por USB y distinguir presencia de archivos de funcionamiento. Este documento describe una prueba pendiente; su existencia no demuestra que el dispositivo esté modificado.
+Objetivo: comprobar el entorno instalado en el Kindle Basic 2014 / KT2 con firmware 5.12.2.2, conservar evidencia técnica por USB y distinguir presencia de archivos, ejecución y persistencia.
+
+## Resultado actual
+
+El probe directo desde el navegador confirmó `uid=0`, arquitectura `armv7l` y firmware `5.12.2.2`. La instalación de KMC está incompleta: el directorio está vacío salvo enlaces colgantes; no están FBInk, KPM, Gandalf ni el hook de arranque. OTA sigue presente y en ejecución. `JAILBROKEN.txt` y el texto `Done` no demostraban una instalación correcta.
+
+La [reparación offline](REPARACION.md) está preparada y copiada con hashes verificados; su ejecución, comprobaciones en ARM y reinicio siguen pendientes. El disparador local ya está configurado para la reparación. Los procedimientos de Biblioteca, búsqueda y probe de este documento conservan el historial de diagnóstico. No se deben interpretar como una secuencia que deba repetirse antes de la reparación.
 
 ## Entorno revisado
 
@@ -55,7 +61,7 @@ Esta prueba comprueba ejecución a través del dispatcher. Aunque funcione, no c
 
 **Resultado observado:** después de la prueba y reconexión no existe ningún informe. Los scripts siguen íntegros y ejecutables desde el montaje USB. No se ha demostrado que el dispatcher funcione; tampoco puede descartarse una salida temprana por las guardas anteriores al registro.
 
-## Comprobación directa desde el navegador
+## Comprobación directa desde el navegador — historial
 
 Para obtener evidencia sin depender del dispatcher, KPM o SH_Integration, se prepararon [kindle_probe_direct.sh](../scripts/kindle_probe_direct.sh) y [winterbreak2_diagnostic.html](../scripts/winterbreak2_diagnostic.html). El servidor WB2 abre el `dialoger.html` local, según [su código](https://raw.githubusercontent.com/KindleModding/Winterbreak2/master/api/index.js). La adaptación conserva ese mecanismo y sustituye el comando de instalación por una llamada al probe copiado en USB.
 
@@ -63,9 +69,19 @@ El probe sólo acepta Linux y el directorio propio con su marcador `OWNER.txt`. 
 
 La copia USB de `winterbreak2/dialoger.html` ya no contiene `curl` ni `jb.sh`. Su comando usa únicamente el script local, con salida redirigida a los informes y un identificador de transferencia nuevo. Conserva la URL de transferencia loopback del mecanismo original; no envía el informe al sitio web, no abre puertos ni shell remota.
 
-Pasos: expulsar, conectar Wi-Fi, abrir `https://penguins184.xyz/wb2` y pulsar una vez su botón **Jailbreak**, que conserva ese nombre pero ahora dispara el diagnóstico. Esperar unos 30 segundos y reconectar USB. Puede dibujar `Diagnostico guardado. Conecta USB.`; la ausencia de ese mensaje visual no sustituye la inspección del informe. La evidencia de root será `uid=0`, no el mero uso del botón.
+Pasos utilizados para el diagnóstico: expulsar, conectar Wi-Fi, abrir `https://penguins184.xyz/wb2` y pulsar una vez su botón **Jailbreak**; esperar unos 30 segundos y reconectar USB. El probe podía dibujar `Diagnostico guardado. Conecta USB.`; el informe con `uid=0` aportó la evidencia de root. **Ese HTML fue sustituido después por el de reparación: el mismo botón ya no ejecuta el diagnóstico anterior.** Las instrucciones de esta sección son históricas.
 
-Una falta de `base64`, `xz` o espacio interno podría explicar un desempaquetado fallido, pero sigue siendo una hipótesis hasta leer el informe. El paquete inspeccionado ocupa aproximadamente 24.33 MB sin comprimir, tanto durante extracción temporal como al copiar KMC. No se reinstalará ni reemplazará firmware como respuesta automática a un resultado incompleto.
+**Resultado:** el informe confirmó ejecución root y la instalación incompleta descrita arriba. El tar embebido ocupa 24,330,240 bytes, el XZ declara un diccionario de 64 MiB y el diagnóstico midió 26,332 KiB libres en `/tmp`. Esas restricciones justifican evitar la descompresión en el dispositivo en la reparación preparada, pero no demuestran cuál fue la causa del fallo inicial. No se dispone de una traza de ese fallo que la establezca.
+
+## Verificación de la reparación preparada
+
+[kindle_check_repair.sh](../scripts/kindle_check_repair.sh) compara los 38 archivos instalados contra sus hashes y comprueba ejecutables, permisos y enlaces de plataforma; inicialización de FBInk; salida válida y código cero de KPM; copia USB de FBInk; hook de arranque; dispatcher; registro de SH_Integration; clave de actualización; OTA renombrado y detenido; y raíz montada en sólo lectura. La ejecución de `kpm version` conserva el efecto de inicialización de base de datos descrito anteriormente.
+
+El wrapper de reparación exige que todas estas pruebas pasen antes de marcar éxito previo al reinicio y habilitar el diagnóstico de arranque. Este último usa el hook oficial mediante un `emergency.sh` revisado y una guarda de ejecución única; vuelve a ejecutar los mismos controles. No reinicia automáticamente.
+
+El éxito requiere informes separados de instalación y arranque, códigos cero, `failed_checks=0` y evidencia de un reinicio real mediante `boot_time` distinto. El marcador `repair-001.success` aislado tampoco sustituye la inspección de los informes. La copia, ejecución y resultados concretos se registrarán en [REGISTRO.md](REGISTRO.md).
+
+Cinco pruebas del verificador pasaron en el Mac con un sistema de archivos y comandos simulados. Incluyen corrupción de payload, proceso OTA activo y respuestas KPM inválidas. La comprobación SUID se simula por las restricciones del sandbox macOS. Esta validación prueba la lógica del verificador; no prueba ejecución ARM ni comportamiento de arranque en el Kindle.
 
 ## Cómo interpretar el informe
 
@@ -97,4 +113,4 @@ Una vez verificado el bloqueo OTA, podrá retirarse únicamente el relleno cread
 - [Manual FBInk: opción `-e`](https://github.com/NiLuJe/FBInk/blob/master/CLI.md).
 - [Instalador jb.sh](https://github.com/KindleModding/jb.sh); los nombres de archivos OTA y rutas anteriores se contrastaron además con el contenido empaquetado del instalador cuyo hash se registra arriba.
 
-Validación local del script: análisis de sintaxis con `sh -n`. Copiado como `documents/KT2_Diagnostico.sh` y checksum contrastado: `504f188b97840a43efbfc9aa5057bde499b0c66bbe246af076d87872de41607f` (3,995 bytes). El volumen se expulsó de forma segura y se entregaron las instrucciones de reinicio y apertura desde Biblioteca. La prueba sigue pendiente hasta obtener y revisar el informe.
+Validación histórica del script inicial: análisis de sintaxis con `sh -n`. Copiado como `documents/KT2_Diagnostico.sh` y checksum contrastado: `504f188b97840a43efbfc9aa5057bde499b0c66bbe246af076d87872de41607f` (3,995 bytes). Biblioteca y búsqueda no produjeron informes; el diagnóstico posterior por navegador sí confirmó root e instalación incompleta. La validación de la reparación en el dispositivo sigue pendiente.
