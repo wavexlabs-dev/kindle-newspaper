@@ -184,3 +184,10 @@ Se actualizará este registro con resultados observados, separando archivos prep
 - El usuario confirmó visualmente: «Sí llegó Una señal que llega por WI-FI». La evidencia conjunta verifica descarga HTTPS autenticada desde Vercel y presentación física de la imagen de prueba sin cable durante la ejecución.
 - No demuestra todavía despertar desde suspensión, actualización a las 08:00 ni generación de noticias/agenda reales. Esos estados siguen pendientes. La interfaz nativa se mantuvo en ejecución.
 - Revisado el mecanismo de despertar de KOReader: programa `rtcWakeup` durante `readyToSuspend`, no arbitrariamente en estado activo, y discrimina reanudaciones manuales de alarmas. Fuente: https://github.com/koreader/koreader/blob/master/frontend/device/kindle/powerd.lua . No se han escrito alarmas ni modificado los ajustes de energía del Kindle.
+
+### Clave de OpenAI autorizada, creada y verificada
+
+- Con autorización explícita del propietario, creada «La Señal — producción» en el proyecto dedicado de OpenAI. Permisos restringidos a Responses; los demás recursos permanecen sin acceso. Estado activo, sin caducidad según configuración aprobada.
+- Guardada como `OPENAI_API_KEY` de Production en Vercel, tipo Secret. El valor se transfirió mediante configuración local excluida de Git y no figura en documentos, comandos ni capturas de evidencia.
+- Prueba mínima de Responses con `gpt-6-luna`, `store:false`: HTTP 200, estado completed y salida `OK`. Uso: 11 tokens de entrada y 5 de salida. No se enviaron newsletters ni calendario en esta prueba.
+- Esta verificación acredita clave, permisos y acceso al modelo. Gmail/Calendar y la generación editorial completa siguen pendientes.
