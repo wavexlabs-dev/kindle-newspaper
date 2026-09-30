@@ -9,7 +9,7 @@ async function api(path,options={}){const r=await fetch('/panel/api'+path,{...op
 function setTab(name){document.querySelectorAll('.tab').forEach(x=>x.hidden=x.id!==name);document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('selected',x.dataset.tab===name));if(name==='archive')loadArchive();}
 async function loadApp(){overview=await api('/overview');$('#login').hidden=true;$('#app').hidden=false;await loadToday();prefs=await api('/preferences');renderSources();}
 function same(a,b){return a&&b&&a.day===b.day&&(a.revision||'daily')===(b.revision||'daily');}
-async function loadToday(){const m=overview.latest;$('#today-date').textContent=date(overview.today).toUpperCase();
+async function loadToday(){$('#today-content').classList.remove('loading');const m=overview.latest;$('#today-date').textContent=date(overview.today).toUpperCase();
  if(!m){$('#today-content').innerHTML='<div class="empty"><h2>Tu primera edición está por llegar.</h2><p>Revisa tus fuentes antes de generar el periódico.</p><button id="generate">Preparar edición</button></div>';$('#generate').onclick=openGenerate;return;}
  const {edition}=await api('/edition/'+identity(m));const e=edition.editorial;const received=same(overview.receipt,m)?overview.receipt:same(overview.alarm,m)?overview.alarm:null;
  const opened=received?.stage==='opened';const status=opened?'Abierto en tu Kindle':received?'Descargado por el Kindle':'Listo en la nube';
