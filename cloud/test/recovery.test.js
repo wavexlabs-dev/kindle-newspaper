@@ -41,7 +41,7 @@ test('malformed and unsafe newer manifests cannot hide the last valid edition', 
   assert.equal((await latest(store, now)).day, '2026-09-10');
 });
 
-test('retention preserves the last valid edition, credentials and unrecognized files', async t => {
+test('retention preserves the permanent archive while cleaning temporary data', async t => {
   const { store, root } = await temporaryStore(t);
   await publish(store, deliverySample('2026-08-31'));
   await publish(store, deliverySample('2026-09-01'));
@@ -52,13 +52,14 @@ test('retention preserves the last valid edition, credentials and unrecognized f
   await store.write(expiredState, 'expired state');
   await fs.utimes(path.join(root, expiredState), new Date('2026-09-27T00:00:00Z'), new Date('2026-09-27T00:00:00Z'));
   await store.writeJSON('runs/2026-08-01.json', { status: 'failed' });
+  await store.writeJSON('drafts/2026-08-31/editorial.json', {temporary:true});
   const result = await prune(store, now, 7);
   assert.equal(result.protected_day, '2026-09-01');
-  assert.ok(result.removed_files > 1);
+  assert.equal(result.removed_files, 1);
   assert.equal(result.removed_states, 1);
   assert.equal(result.removed_runs, 1);
-  assert.equal(await store.read('editions/2026-08-31/manifest.json'), null);
-  assert.equal(await store.read('editions/2026-09-02/page-1.png'), null);
+  assert.ok(await store.read('editions/2026-08-31/manifest.json'));
+  assert.ok(await store.read('editions/2026-09-02/page-1.png'));
   assert.ok(await store.read('editions/2026-09-01/page-1.png'));
   assert.ok(await store.read('editions/2026-08-31/notes.txt'));
   assert.ok(await store.read('oauth/calendar'));

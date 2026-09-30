@@ -1,3 +1,4 @@
+import {readPreferences} from './preferences.js';
 import { OAuth2Client } from 'google-auth-library';
 import { createHash, randomBytes } from 'node:crypto';
 import { convert } from 'html-to-text';
@@ -65,11 +66,12 @@ function bodyText(part) {
   return plain ? bodyText(plain) : children.map(bodyText).join('\n');
 }
 export async function newsletters(store) {
-  const senders = (process.env.NEWSLETTER_SENDERS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const preferences=await readPreferences(store);
+  const senders=preferences.senders.filter(s=>s.enabled).map(s=>s.email);
   if (!senders.length || senders.length > 20 || senders.some(s => !/^[a-zA-Z0-9._+%-]+@[a-zA-Z0-9.-]+$/.test(s))) throw new Error('Configure newsletter sender allowlist');
   const auth = await apiClient(store, 'newsletters');
-  const q = `newer_than:3d -in:spam -in:trash {${senders.map(s => `from:${s}`).join(' ')}}`;
-  const { data } = await auth.request({ url: 'https://gmail.googleapis.com/gmail/v1/users/me/messages', params: { q, maxResults: 12 }, timeout: 15000 });
+  const q = `newer_than:${preferences.lookbackDays}d -in:spam -in:trash {${senders.map(s => `from:${s}`).join(' ')}}`;
+  const { data } = await auth.request({ url: 'https://gmail.googleapis.com/gmail/v1/users/me/messages', params: { q, maxResults: preferences.maxMessages }, timeout: 15000 });
   const result = [];
   for (const item of data.messages || []) {
     const { data: mail } = await auth.request({ url: `https://gmail.googleapis.com/gmail/v1/users/me/messages/${item.id}`, params: { format: 'full' }, timeout: 15000 });

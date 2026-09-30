@@ -27,7 +27,7 @@ Para arrancar el servidor, completa `.env.local`, activa `LOCAL_DATA_DIR=../.loc
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Cliente OAuth web propio |
 | `NEWSLETTER_ACCOUNT` | Email exacto de la cuenta que autorizará Gmail |
 | `CALENDAR_ACCOUNT` | Email exacto de la cuenta que autorizará Calendar |
-| `NEWSLETTER_SENDERS` | Remitentes exactos separados por comas; 1–20 |
+| `NEWSLETTER_SENDERS` | Remitentes iniciales; después del primer guardado manda el [panel](../docs/PANEL.md) |
 | `OPENAI_API_KEY` | Clave dedicada con acceso a Responses y herramientas requeridas |
 | `OPENAI_MODEL` | `gpt-6-luna` por defecto; verifica acceso de tu cuenta |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob **privado** de tu proyecto |
@@ -127,3 +127,7 @@ El cron está configurado a `0 12 * * *` (UTC): generación prevista a las 06:00
 ## Referencias
 
 [Google OAuth web](https://developers.google.com/identity/protocols/oauth2/web-server) · [CalendarList](https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/list) · [OpenAI imágenes](https://developers.openai.com/api/docs/guides/image-generation) · [Vercel Blob privado](https://vercel.com/docs/vercel-blob/private-storage)
+
+## Panel
+
+Consulta [acceso privado, gestión de fuentes y archivo](../docs/PANEL.md). Incluye sus assets en la función de Vercel; el almacenamiento de ediciones publicadas es permanente, mientras que `RETENTION_DAYS` limpia borradores temporales.

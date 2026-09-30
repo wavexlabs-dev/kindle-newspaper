@@ -146,3 +146,7 @@ La cuenta de ChatGPT y la API tienen facturación separada. El coste de una edic
 [Glanceboard](https://github.com/google-gemini/glanceboard) · [KindleModding](https://kindlemodding.org/) · [KOReader](https://github.com/koreader/koreader) · [FBInk](https://github.com/NiLuJe/FBInk)
 
 Los componentes externos conservan sus licencias. Las fuentes Noto Serif incluyen [SIL OFL](cloud/fonts/LICENSE). Este repositorio aún no tiene una licencia general de distribución: acceso al tutorial no equivale a una licencia de código abierto.
+
+## Panel privado de control
+
+La aplicación incluye una [mesa de edición](docs/PANEL.md) en `/panel`: portada, archivo visual, lector y gestión de newsletters sin redeploy. Cada persona despliega su propia instancia y configura su acceso privado. Los blogs y redes sociales quedan fuera de esta primera versión.

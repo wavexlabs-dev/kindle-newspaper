@@ -12,12 +12,7 @@ export async function prune(store, now = DateTime.now(), days = Number(process.e
     const match = /^drafts\/(\d{4}-\d{2}-\d{2})\/(?:revisions\/\d{13}\/)?(editorial\.json|cover\.png|cover-usage\.json)$/.exec(item.pathname);
     if (match && validDay(match[1]) && match[1] < cutoff) candidates.push(item.pathname);
   }
-  for (const item of await store.list('editions/')) {
-    const match = /^editions\/(\d{4}-\d{2}-\d{2})\/(?:revisions\/\d{13}\/)?(manifest\.json|edition\.json|edition\.cbz|page-(?:[1-9]|1\d|20)\.png)$/.exec(item.pathname);
-    if (match && validDay(match[1]) && match[1] < cutoff && match[1] !== protectedDay) candidates.push(item.pathname);
-  }
-  // Unpublish expired editions before removing their component files. In-flight
-  // readers then retain their previously validated local edition and retry.
+  // Keep published editions permanently for the private archive.
   candidates.sort((a, b) => Number(b.endsWith('/manifest.json')) - Number(a.endsWith('/manifest.json')) || a.localeCompare(b));
   for (const name of candidates) await store.remove(name);
   let expiredStates = 0;

@@ -45,7 +45,7 @@ export async function generate(store, day, { retryFailed = false, revision } = {
   const key = editionKey(day, revision);
   const existing = await store.json(`editions/${key}/manifest.json`);
   if (existing) return { status: 'already-published', day };
-  for (const name of ['OPENAI_API_KEY', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'ENCRYPTION_KEY', 'NEWSLETTER_SENDERS']) {
+  for (const name of ['OPENAI_API_KEY', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'ENCRYPTION_KEY']) {
     if (!process.env[name]) throw new Error('Complete service configuration before generating');
   }
   if (!await store.read('oauth/newsletters') || !await store.read('oauth/calendar')) throw new Error('Connect both Google accounts first');

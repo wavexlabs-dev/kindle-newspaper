@@ -1,4 +1,5 @@
 import express from 'express';
+import { mountPanel } from './panel.js';
 import { Store } from './store.js';
 import { equalSecret } from './security.js';
 import { startOAuth, finishOAuth, calendar, allCalendarsAuthorized } from './google.js';
@@ -22,7 +23,8 @@ export function createApp(store = new Store()) {
     if (!header.startsWith('Bearer ') || !equalSecret(header.slice(7), process.env[variable])) return res.sendStatus(401);
     next();
   };
-  app.get('/', (_req, res) => res.type('text').send('Pablo’s Time · Periódico personal de IA y tecnología. Acceso privado.'));
+  mountPanel(app,store,auth('ADMIN_TOKEN'));
+  app.get('/', (_req,res)=>res.redirect('/panel'));
   app.get('/health', (_req, res) => res.json({ service: 'la-senal', status: 'running' }));
   app.post('/admin/oauth/:role', auth('ADMIN_TOKEN'), async (req, res) => res.json({ url: await startOAuth(store, req.params.role) }));
   app.get('/oauth/callback', async (req, res) => {
@@ -55,6 +57,7 @@ export function createApp(store = new Store()) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day || '') || (revision !== undefined && !/^\d{13}$/.test(revision)) || !['downloaded','opened','alarm'].includes(stage) || !Number.isInteger(pages) || pages<1 || pages>20) return res.sendStatus(400);
     const receipt={day,...(revision?{revision}:{}),stage,pages,trigger:['reader_open','manual','test_alarm','morning_alarm','retry','retry_next_day'].includes(trigger)?trigger:'unknown',at:new Date().toISOString()};
     await store.writeJSON('device/last-receipt.json',receipt,{overwrite:true});
+    await store.writeJSON(`receipts/${editionKey(day,revision)}.json`,receipt,{overwrite:true});
     if (receipt.trigger==='test_alarm' || receipt.trigger==='morning_alarm') await store.writeJSON('device/last-alarm.json',receipt,{overwrite:true});
     res.json({ok:true});
   });
