@@ -37,3 +37,21 @@ El archivo es privado y crece con el uso; su almacenamiento también cuenta para
 ## Validación
 
 `npm test` comprueba autenticación, separación respecto del token del Kindle, protección de cambios contra otros orígenes, preferencias persistidas, conflictos entre guardados, validación de remitentes y conservación del archivo. La prueba visual debe revisar escritorio/móvil, lectura de varias páginas, guardado y recarga de fuentes.
+
+## Recorrido visual
+
+Capturas reales del panel publicado el 30 de septiembre de 2026. No contienen contraseñas, tokens ni páginas de agenda.
+
+### Mi periódico
+
+![Portada, resumen y confirmación de apertura en el Kindle](images/05-panel-today.png)
+
+### Archivo
+
+![Galería de publicaciones diarias y revisiones](images/06-panel-archive.png)
+
+### Mis newsletters
+
+![Lista de remitentes y preferencias de lectura](images/07-panel-sources.png)
+
+La prueba en navegador verificó lectura de páginas, alta y eliminación de un remitente ficticio en desarrollo, guardado y persistencia al recargar, y ausencia de desbordamiento a 390 px. En producción se verificaron acceso privado, cuatro publicaciones visibles y guardado de los cuatro remitentes existentes sin alterarlos. Las 21 pruebas del servidor pasaron. No se generó una edición pagada adicional para probar el diseño.

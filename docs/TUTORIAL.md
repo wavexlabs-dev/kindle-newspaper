@@ -162,7 +162,7 @@ El cron cloud prepara contenido a las 06:00 CDMX. `next_delivery` indica las 08:
 | Hora del servidor | Cron UTC de `cloud/vercel.json`; adapta cambios estacionales si tu zona los tiene |
 | Resolución | Render, `normalizeCover`, manifiesto y validadores del cliente; no basta con cambiar un PNG |
 | Número/longitud de noticias | Esquemas en `cloud/src/edition.js` y límites/prompt en `editor.js` |
-| Retención | `RETENTION_DAYS` (2–30); se protege la última edición válida |
+| Retención | `RETENTION_DAYS` (2–30) limpia borradores; el archivo publicado se conserva |
 
 No hay aún una variable única para el nombre, tamaño o hora. Pide al agente cambios coherentes entre archivos y verificación en tu dispositivo.
 

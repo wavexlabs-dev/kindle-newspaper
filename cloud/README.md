@@ -116,7 +116,7 @@ No publiques la salida de `/admin/agenda` ni `edition.json` en un issue o tutori
 - Un fallo conserva la publicación anterior y el estado del intento. Tras revisar la causa, un administrador puede enviar `{"retryFailed":true}` con Content-Type JSON para el reintento permitido. No automatices un bucle ni borres registros para saltarte los límites. El código conserva una excepción acotada para el antiguo error de esquema 400; consulta `publish.js` antes de una recuperación.
 - Una interrupción cerca de 300 segundos requiere diagnóstico del hosting y de la etapa; no hay todavía un sistema de trabajos distribuido que garantice terminar tareas más largas.
 
-Retención: 7 días por defecto y protección de la última edición válida aunque sea más antigua. Se limpian únicamente nombres conocidos de ediciones/borradores, registros diarios de más de 30 días y estados OAuth temporales de más de una hora. Un fallo de limpieza no invalida la publicación. Los secretos se conservan.
+Retención: los borradores temporales se limpian a los 7 días por defecto. Las ediciones publicadas se conservan para el archivo privado. También se limpian registros diarios de más de 30 días y estados OAuth temporales de más de una hora. Un fallo de limpieza no invalida la publicación. Los secretos se conservan.
 
 ## Horario y límite del producto
 
